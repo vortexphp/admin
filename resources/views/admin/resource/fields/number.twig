@@ -1,0 +1,7 @@
+<label class="text-xs font-medium text-zinc-500" for="field_{{ field.name }}">{{ field.label }}</label>
+<input id="field_{{ field.name }}" type="number" name="{{ field.name }}"
+       value="{% if values[field.name] is defined and values[field.name] is not same as(null) and values[field.name] is not same as('') %}{{ values[field.name] }}{% endif %}"
+       class="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 shadow-sm focus:border-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-500/30"
+       {% if field.integer %}step="1"{% elseif field.step is not null %}step="{{ field.step }}"{% else %}step="any"{% endif %}
+       {% if field.min is not null %}min="{{ field.min }}"{% endif %}
+       {% if field.max is not null %}max="{{ field.max }}"{% endif %}>

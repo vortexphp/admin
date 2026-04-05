@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Vortex\Admin\Forms;
 
-final class TextareaField extends FormField
+final class EmailField extends FormField
 {
     public static function make(string $name, ?string $label = null): self
     {
@@ -13,12 +13,15 @@ final class TextareaField extends FormField
 
     public function inputKind(): string
     {
-        return 'textarea';
+        return 'email';
     }
 
-    public function toViewArray(): array
+    public function normalizeRequestValue(mixed $raw): mixed
     {
-        return parent::toViewArray() + ['rows' => 6];
+        if ($raw === null || $raw === '') {
+            return '';
+        }
+
+        return is_string($raw) ? trim($raw) : (string) $raw;
     }
 }
-

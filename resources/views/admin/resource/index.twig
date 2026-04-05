@@ -58,7 +58,7 @@
                 <thead>
                 <tr>
                     {% for col in tableColumns %}
-                        <th class="border-b border-zinc-800 bg-zinc-900/70 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-zinc-400">{{ attribute(col, 'label') }}</th>
+                        <th class="border-b border-zinc-800 bg-zinc-900/70 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-zinc-400">{{ col.label }}</th>
                     {% endfor %}
                     {% if tableActions|length > 0 %}
                         <th class="border-b border-zinc-800 bg-zinc-900/70 px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-zinc-400" aria-label="Actions"></th>
@@ -70,7 +70,10 @@
                     {% set rowIndex = loop.index0 %}
                     <tr class="border-b border-zinc-800/80 transition-colors last:border-0 hover:bg-zinc-900/35">
                         {% for col in tableColumns %}
-                            <td class="whitespace-nowrap px-4 py-3 text-zinc-200">{{ attribute(row, attribute(col, 'name')) }}</td>
+                            {% set cell = attribute(row, col.name) %}
+                            <td class="px-4 py-3 text-sm text-zinc-200 {% if col.kind in ['text', 'numeric', 'email', 'url', 'datetime'] %}whitespace-nowrap{% endif %}">
+                                {% include 'admin/resource/cells/' ~ col.kind ~ '.twig' with { col: col, cell: cell } only %}
+                            </td>
                         {% endfor %}
                         {% if tableActions|length > 0 %}
                             <td class="whitespace-nowrap px-4 py-3 text-right">

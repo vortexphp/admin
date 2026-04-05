@@ -123,8 +123,9 @@ use Vortex\Admin\Forms\Form;
 use Vortex\Admin\Forms\TextareaField;
 use Vortex\Admin\Forms\TextField;
 use Vortex\Admin\Resource;
+use Vortex\Admin\Tables\Columns\DatetimeColumn;
+use Vortex\Admin\Tables\Columns\TextColumn;
 use Vortex\Admin\Tables\Table;
-use Vortex\Admin\Tables\TableColumn;
 use Vortex\Admin\Tables\TextFilter;
 
 final class PostResource extends Resource
@@ -155,9 +156,9 @@ final class PostResource extends Resource
     public static function table(): Table
     {
         return Table::make(
-            TableColumn::make('id'),
-            TableColumn::make('title'),
-            TableColumn::make('created_at', 'Created'),
+            TextColumn::make('id'),
+            TextColumn::make('title'),
+            DatetimeColumn::make('created_at', 'Created', 'Y-m-d H:i'),
         )->withFilters(
             TextFilter::make('title', 'Title'),
         );
@@ -193,16 +194,24 @@ Forms include **`_csrf`**; invalid CSRF redirects back without flash error (hard
 
 **Table API**
 
-- **`Table::make(TableColumn::make('attr', 'Optional label'), ...)`** — column order; omit the second argument for an auto label from the attribute name (`created_at` → `Created At`).
-- **`TableColumn::make('name')->label('Override')`** — fluent label override.
+- **`Table::make(...)`** takes subclasses of **`TableColumn`** (each in its own file under **`Vortex\Admin\Tables\Columns\`**):
+  - **`TextColumn::make('attr', 'Optional label', maxLength: 80)`** — default string cell; truncates long values for the grid.
+  - **`NumericColumn::make('price', 'Price', decimals: 2)`** — **`->withThousandsSeparator(',')`** optional.
+  - **`BooleanColumn::make('active')`** — **`->labels('Yes', 'No', '—')`** for display.
+  - **`DatetimeColumn::make('created_at', 'Created', 'Y-m-d H:i')`**
+  - **`EmailColumn::make('email')`**, **`UrlColumn::make('website')`** — links in the index; anchor text can truncate while `href` stays full.
+  - **`BadgeColumn::make('status', 'Status', ['draft' => ['label' => 'Draft', 'tone' => 'warning'], ...])`** — pills; tones: **`neutral`**, **`success`**, **`warning`**, **`danger`**.
+- Column **`displayKind()`** maps to **`resources/views/admin/resource/cells/{kind}.twig`** (add your own column class + partial to extend).
 - **Filters** (optional): chain **`->withFilters(TextFilter::make('title', 'Contains'), SelectFilter::make('status', ['draft' => 'Draft'], 'Status'), ...)`**. Index uses GET query keys **`f_{column}`** (e.g. **`f_title`**). **`TextFilter`** uses **`LIKE %…%`** (wildcards in the value are escaped). **`SelectFilter`** whitelists values against its options map.
 - **Row actions**: **`Table::make()`** adds **`EditAction`** and **`DeleteAction`** by default. Replace with **`->withActions(EditAction::make('Modify'), ...)`** or **`->withActions()`** (empty — no actions column). Implement **`TableRowAction::resolve($slug, $row)`** to return **`kind`** (`link` / `post`), **`label`**, **`route`** name, and **`routeParams`** for custom links or POST forms (delete uses POST + CSRF in the template).
 - **Pagination**: index uses **`QueryBuilder::paginate()`** with query **`page`**. Override **`tablePerPage(): int`** for the default page size when **`per_page`** is missing or invalid (clamped **`1…100`**). Override **`tablePerPageOptions(): array`** (list of ints) for the “Per page” dropdown; **one** value hides the control; if **`tablePerPage()`** is not in that list, it is merged in. Page links preserve **`per_page`** and filter query params when multiple sizes exist.
 
 **Form API** (same idea as the table)
 
-- **`Form::make(TextField::make('attr', 'Optional label'), TextareaField::make('body'), ...)`** — field order; each field is its own class.
-- **`TextField`**, **`TextareaField`** — extend **`FormField`**; use **`->label('Override')`** like **`TableColumn`**.
+- **`Form::make(...)`** — field order; each field is its own class under **`Vortex\Admin\Forms\`**.
+- Built-ins: **`TextField`**, **`TextareaField`**, **`PasswordField`**, **`EmailField`**, **`NumberField`** ( **`->integer()`**, **`->min()`** / **`->max()`** / **`->step()`**, **`->emptyAsNull()`** ), **`HiddenField`**, **`CheckboxField`**, **`SelectField::make('role', ['a' => 'A'], 'Label')`**, **`DateField`** (HTML **`Y-m-d`**).
+- Each field’s **`inputKind()`** maps to **`resources/views/admin/resource/fields/{kind}.twig`**. Implement **`FormField::toViewArray()`** / **`normalizeRequestValue()`** when you add types.
+- **`ResourceController`** builds POST payloads with **`normalizeRequestValue()`** per field (checkboxes, numbers, dates, etc.).
 
 ## What it registers
 

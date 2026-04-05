@@ -32,14 +32,14 @@ use Vortex\Admin\Forms\Form;
 use Vortex\Admin\Forms\TextField;
 use Vortex\Admin\Resource;
 use Vortex\Admin\Tables\Table;
-use Vortex\Admin\Tables\TableColumn;
+use Vortex\Admin\Tables\Columns\TextColumn;
 use Vortex\Database\Model;
 final class DiscoveredCrudModel extends Model { protected static array $fillable = ['title']; }
 final class DiscoveredCrudResource extends Resource
 {
     public static function model(): string { return DiscoveredCrudModel::class; }
     public static function slug(): string { return 'discovered-cruds'; }
-    public static function table(): Table { return Table::make(TableColumn::make('id'), TableColumn::make('title')); }
+    public static function table(): Table { return Table::make(TextColumn::make('id'), TextColumn::make('title')); }
     public static function form(): Form { return Form::make(TextField::make('title')); }
 }
 PHP,
@@ -87,7 +87,6 @@ use Vortex\Admin\Forms\Form;
 use Vortex\Admin\Forms\TextField;
 use Vortex\Admin\Resource;
 use Vortex\Admin\Tables\Table;
-use Vortex\Admin\Tables\TableColumn;
 use Vortex\Admin\Tests\StubNoteResource as Stub;
 use Vortex\Database\Model;
 final class AlsoStubModel extends Model { protected static array $fillable = ['title']; }

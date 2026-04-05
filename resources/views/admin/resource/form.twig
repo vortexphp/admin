@@ -14,16 +14,11 @@
 <div class="mx-auto max-w-lg">
     <form method="post"
           action="{% if record %}{{ route('admin.resource.update', { slug: slug, id: record.id }) }}{% else %}{{ route('admin.resource.store', { slug: slug }) }}{% endif %}"
-          class="mt-2 flex flex-col gap-1">
+          class="mt-2 flex flex-col gap-4">
         <input type="hidden" name="_csrf" value="{{ csrfToken }}">
 
         {% for field in formFields %}
-            <label class="mt-3 text-xs font-medium text-zinc-500 first:mt-0" for="field_{{ attribute(field, 'name') }}">{{ attribute(field, 'label') }}</label>
-            {% if field.inputKind == 'textarea' %}
-                <textarea id="field_{{ attribute(field, 'name') }}" name="{{ attribute(field, 'name') }}" class="min-h-[6rem] resize-y rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 shadow-sm placeholder:text-zinc-600 focus:border-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-500/30" rows="6">{{ values[attribute(field, 'name')] ?? '' }}</textarea>
-            {% else %}
-                <input id="field_{{ attribute(field, 'name') }}" type="text" name="{{ attribute(field, 'name') }}" value="{{ values[attribute(field, 'name')] ?? '' }}" class="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 shadow-sm focus:border-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-500/30" autocomplete="off">
-            {% endif %}
+            {% include 'admin/resource/fields/' ~ field.inputKind ~ '.twig' with { field: field, values: values } only %}
         {% endfor %}
 
         <div class="mt-6 flex flex-wrap gap-3">

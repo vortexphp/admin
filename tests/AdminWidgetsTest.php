@@ -10,7 +10,7 @@ use Vortex\Admin\Forms\TextField;
 use Vortex\Admin\Resource;
 use Vortex\Admin\ResourceRegistry;
 use Vortex\Admin\Tables\Table;
-use Vortex\Admin\Tables\TableColumn;
+use Vortex\Admin\Tables\Columns\TextColumn;
 use Vortex\Admin\Widgets\AdminOverviewStatsWidget;
 use Vortex\Admin\Widgets\LinkListWidget;
 use Vortex\Admin\Widgets\NoticeTone;
@@ -142,7 +142,7 @@ final class WidgetTestNoteResource extends Resource
 
     public static function table(): Table
     {
-        return Table::make(TableColumn::make('id'));
+        return Table::make(TextColumn::make('id'));
     }
 
     public static function form(): Form

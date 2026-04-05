@@ -42,7 +42,7 @@ abstract class Resource
     }
 
     /**
-     * Index table: use {@see Table} and {@see \Vortex\Admin\Tables\TableColumn} to register columns and labels.
+     * Index table: use {@see Table} and column classes under {@see \Vortex\Admin\Tables\Columns} (e.g. {@see \Vortex\Admin\Tables\Columns\TextColumn}).
      */
     abstract public static function table(): Table;
 

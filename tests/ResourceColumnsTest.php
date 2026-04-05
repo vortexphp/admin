@@ -10,7 +10,7 @@ use Vortex\Admin\Forms\TextareaField;
 use Vortex\Admin\Forms\TextField;
 use Vortex\Admin\Resource;
 use Vortex\Admin\Tables\Table;
-use Vortex\Admin\Tables\TableColumn;
+use Vortex\Admin\Tables\Columns\TextColumn;
 use Vortex\Database\Model;
 
 final class ResourceColumnsTest extends TestCase
@@ -65,8 +65,8 @@ final class DemoResource extends Resource
     public static function table(): Table
     {
         return Table::make(
-            TableColumn::make('id'),
-            TableColumn::make('title', 'Title'),
+            TextColumn::make('id'),
+            TextColumn::make('title', 'Title'),
         );
     }
 
@@ -99,7 +99,7 @@ final class TinyPageDemoResource extends Resource
 
     public static function table(): Table
     {
-        return Table::make(TableColumn::make('id'));
+        return Table::make(TextColumn::make('id'));
     }
 
     public static function tablePerPage(): int
@@ -128,8 +128,8 @@ final class UserLikeResource extends Resource
     public static function table(): Table
     {
         return Table::make(
-            TableColumn::make('id'),
-            TableColumn::make('name', 'Name'),
+            TextColumn::make('id'),
+            TextColumn::make('name', 'Name'),
         );
     }
 

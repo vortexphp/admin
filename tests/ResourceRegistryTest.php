@@ -10,7 +10,7 @@ use Vortex\Admin\Forms\TextField;
 use Vortex\Admin\Resource;
 use Vortex\Admin\ResourceRegistry;
 use Vortex\Admin\Tables\Table;
-use Vortex\Admin\Tables\TableColumn;
+use Vortex\Admin\Tables\Columns\TextColumn;
 use Vortex\Config\Repository;
 use Vortex\Database\Model;
 
@@ -58,8 +58,8 @@ final class StubNoteResource extends Resource
     public static function table(): Table
     {
         return Table::make(
-            TableColumn::make('id'),
-            TableColumn::make('title'),
+            TextColumn::make('id'),
+            TextColumn::make('title'),
         );
     }
 

@@ -7,7 +7,7 @@ namespace Vortex\Admin\Tests;
 use PHPUnit\Framework\TestCase;
 use Vortex\Admin\Tables\SelectFilter;
 use Vortex\Admin\Tables\Table;
-use Vortex\Admin\Tables\TableColumn;
+use Vortex\Admin\Tables\Columns\TextColumn;
 use Vortex\Admin\Tables\TextFilter;
 
 final class TableFiltersTest extends TestCase
@@ -15,8 +15,8 @@ final class TableFiltersTest extends TestCase
     public function testWithFiltersPreservesColumns(): void
     {
         $base = Table::make(
-            TableColumn::make('id'),
-            TableColumn::make('title'),
+            TextColumn::make('id'),
+            TextColumn::make('title'),
         );
         self::assertSame([], $base->filters());
 

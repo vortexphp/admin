@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Vortex\Admin\Forms;
 
 /**
- * One field on a resource create/edit {@see Form}. Use concrete {@see TextField} or {@see TextareaField}.
+ * One field on a resource create/edit {@see Form}. Each {@see inputKind()} maps to
+ * {@code resources/views/admin/resource/fields/{kind}.twig}.
  */
 abstract class FormField
 {
@@ -15,10 +16,28 @@ abstract class FormField
     ) {
     }
 
-    /**
-     * Drives the generic admin form template ({@code text} vs {@code textarea}).
-     */
     abstract public function inputKind(): string;
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function toViewArray(): array
+    {
+        return [
+            'inputKind' => $this->inputKind(),
+            'name' => $this->name,
+            'label' => $this->label,
+        ];
+    }
+
+    public function normalizeRequestValue(mixed $raw): mixed
+    {
+        if ($raw === null) {
+            return '';
+        }
+
+        return is_string($raw) ? trim($raw) : $raw;
+    }
 
     /**
      * @return static

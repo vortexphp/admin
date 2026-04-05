@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Vortex\Admin\Http;
 
+use Vortex\Admin\Forms\Form;
+use Vortex\Admin\Forms\FormField;
 use Vortex\Admin\ResourceRegistry;
 use Vortex\Admin\Tables\Table;
+use Vortex\Admin\Tables\TableColumn;
 use Vortex\Database\Model;
 use Vortex\Http\Csrf;
 use Vortex\Http\Request;
@@ -81,7 +84,10 @@ final class ResourceController extends AdminHttpController
         return $this->adminView('admin.resource.index', [
             'title' => $class::pluralLabel(),
             'slug' => $slug,
-            'tableColumns' => $table->columns(),
+            'tableColumns' => array_map(
+                static fn (TableColumn $c): array => $c->toViewArray(),
+                $table->columns(),
+            ),
             'tableFilters' => $table->filters(),
             'tableActions' => $table->actions(),
             'filterValues' => $filterValues,
@@ -143,7 +149,10 @@ final class ResourceController extends AdminHttpController
         return $this->adminView('admin.resource.form', [
             'title' => 'Create ' . $class::label(),
             'slug' => $slug,
-            'formFields' => $class::form()->fields(),
+            'formFields' => array_map(
+                static fn (FormField $f): array => $f->toViewArray(),
+                $class::form()->fields(),
+            ),
             'values' => $class::formValues(null),
             'record' => null,
             'csrfToken' => Csrf::token(),
@@ -161,7 +170,7 @@ final class ResourceController extends AdminHttpController
         }
 
         $modelClass = $class::model();
-        $payload = $this->formPayload($class::form()->fieldNames());
+        $payload = $this->formPayload($class::form());
         $modelClass::create($payload);
         Session::flash('admin_success', 'Created.');
 
@@ -185,7 +194,10 @@ final class ResourceController extends AdminHttpController
         return $this->adminView('admin.resource.form', [
             'title' => 'Edit ' . $class::label(),
             'slug' => $slug,
-            'formFields' => $form->fields(),
+            'formFields' => array_map(
+                static fn (FormField $f): array => $f->toViewArray(),
+                $form->fields(),
+            ),
             'values' => $class::formValues($record),
             'record' => $record,
             'csrfToken' => Csrf::token(),
@@ -208,7 +220,7 @@ final class ResourceController extends AdminHttpController
             return Response::make('Not found', 404);
         }
 
-        $payload = $this->formPayload($class::form()->fieldNames());
+        $payload = $this->formPayload($class::form());
         $record->update($payload);
         Session::flash('admin_success', 'Saved.');
 
@@ -241,12 +253,9 @@ final class ResourceController extends AdminHttpController
     private function rowPayload(Model $row, Table $table): array
     {
         $out = [];
-        foreach ($table->columnNames() as $col) {
-            $v = $row->{$col} ?? null;
-            if (is_string($v) && strlen($v) > 80) {
-                $v = substr($v, 0, 77) . '…';
-            }
-            $out[$col] = $v;
+        foreach ($table->columns() as $col) {
+            $raw = $row->{$col->name} ?? null;
+            $out[$col->name] = $col->formatCellValue($raw);
         }
         if (! array_key_exists('id', $out) && isset($row->id)) {
             $out['id'] = $row->id;
@@ -256,18 +265,16 @@ final class ResourceController extends AdminHttpController
     }
 
     /**
-     * @param list<string> $keys
      * @return array<string, mixed>
      */
-    private function formPayload(array $keys): array
+    private function formPayload(Form $form): array
     {
         $body = Request::all();
         $out = [];
-        foreach ($keys as $k) {
-            if (! array_key_exists($k, $body)) {
-                continue;
-            }
-            $out[$k] = is_string($body[$k]) ? trim($body[$k]) : $body[$k];
+        foreach ($form->fields() as $field) {
+            $k = $field->name;
+            $raw = $body[$k] ?? null;
+            $out[$k] = $field->normalizeRequestValue($raw);
         }
 
         return $out;

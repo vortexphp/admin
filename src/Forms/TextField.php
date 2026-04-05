@@ -15,4 +15,10 @@ final class TextField extends FormField
     {
         return 'text';
     }
+
+    public function toViewArray(): array
+    {
+        return parent::toViewArray() + ['autocomplete' => 'off'];
+    }
 }
+

@@ -5,27 +5,39 @@ declare(strict_types=1);
 namespace Vortex\Admin\Tables;
 
 /**
- * One column on a resource index {@see Table} (model attribute + header label).
+ * One index column: subclass per {@see displayKind()} (Twig {@code admin/resource/cells/{kind}.twig}).
  */
-final class TableColumn
+abstract class TableColumn
 {
-    public function __construct(
+    protected function __construct(
         public readonly string $name,
         public readonly string $label,
     ) {
     }
 
-    public static function make(string $name, ?string $label = null): self
+    abstract public function displayKind(): string;
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function toViewArray(): array
     {
-        return new self($name, $label ?? self::defaultLabel($name));
+        return [
+            'kind' => $this->displayKind(),
+            'name' => $this->name,
+            'label' => $this->label,
+        ];
     }
 
-    public function label(string $label): self
+    /**
+     * Normalize attribute value for the index row payload (Twig reads {@code row[col.name]}).
+     */
+    public function formatCellValue(mixed $value): mixed
     {
-        return new self($this->name, $label);
+        return $value;
     }
 
-    private static function defaultLabel(string $name): string
+    protected static function defaultLabel(string $name): string
     {
         $name = str_replace('_', ' ', $name);
 

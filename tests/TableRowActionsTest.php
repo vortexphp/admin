@@ -8,19 +8,19 @@ use PHPUnit\Framework\TestCase;
 use Vortex\Admin\Tables\DeleteAction;
 use Vortex\Admin\Tables\EditAction;
 use Vortex\Admin\Tables\Table;
-use Vortex\Admin\Tables\TableColumn;
+use Vortex\Admin\Tables\Columns\TextColumn;
 
 final class TableRowActionsTest extends TestCase
 {
     public function testDefaultMakeIncludesEditAndDelete(): void
     {
-        $t = Table::make(TableColumn::make('id'));
+        $t = Table::make(TextColumn::make('id'));
         self::assertCount(2, $t->actions());
     }
 
     public function testWithActionsReplacesDefaults(): void
     {
-        $t = Table::make(TableColumn::make('id'))->withActions(EditAction::make('Modify'));
+        $t = Table::make(TextColumn::make('id'))->withActions(EditAction::make('Modify'));
         self::assertCount(1, $t->actions());
         $resolved = $t->actions()[0]->resolve('notes', ['id' => 5]);
         self::assertSame('link', $resolved['kind'] ?? null);

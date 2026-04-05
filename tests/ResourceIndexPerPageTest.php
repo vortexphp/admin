@@ -10,7 +10,7 @@ use Vortex\Admin\Forms\TextField;
 use Vortex\Admin\Http\ResourceController;
 use Vortex\Admin\Resource;
 use Vortex\Admin\Tables\Table;
-use Vortex\Admin\Tables\TableColumn;
+use Vortex\Admin\Tables\Columns\TextColumn;
 use Vortex\Database\Model;
 use ReflectionMethod;
 
@@ -65,7 +65,7 @@ final class PerPageStubResource extends Resource
 
     public static function table(): Table
     {
-        return Table::make(TableColumn::make('id'));
+        return Table::make(TextColumn::make('id'));
     }
 
     public static function tablePerPageOptions(): array
@@ -98,7 +98,7 @@ final class MergeDefaultPerPageResource extends Resource
 
     public static function table(): Table
     {
-        return Table::make(TableColumn::make('id'));
+        return Table::make(TextColumn::make('id'));
     }
 
     public static function tablePerPage(): int

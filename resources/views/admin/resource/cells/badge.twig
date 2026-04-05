@@ -1,0 +1,23 @@
+{% set key = cell is null ? '' : cell ~ '' %}
+{% set spec = attribute(col.badges, key)|default(null) %}
+{% if spec %}
+    {% set tone = spec.tone|default('neutral') %}
+    {% if tone == 'success' %}
+        {% set cls = 'border-emerald-500/30 bg-emerald-500/10 text-emerald-200' %}
+    {% elseif tone == 'warning' %}
+        {% set cls = 'border-amber-500/35 bg-amber-500/10 text-amber-200' %}
+    {% elseif tone == 'danger' %}
+        {% set cls = 'border-rose-500/35 bg-rose-500/10 text-rose-200' %}
+    {% else %}
+        {% set cls = 'border-zinc-600/50 bg-zinc-800/50 text-zinc-300' %}
+    {% endif %}
+    <span class="inline-flex rounded-md border px-2 py-0.5 text-xs font-medium {{ cls }}">{{ spec.label }}</span>
+{% else %}
+    {% set ft = col.fallbackTone|default('neutral') %}
+    {% if ft == 'danger' %}
+        {% set fcls = 'border-rose-500/30 text-rose-300/90' %}
+    {% else %}
+        {% set fcls = 'border-zinc-700 text-zinc-500' %}
+    {% endif %}
+    <span class="inline-flex rounded-md border px-2 py-0.5 text-xs {{ fcls }}">{{ col.fallbackLabel }}</span>
+{% endif %}
