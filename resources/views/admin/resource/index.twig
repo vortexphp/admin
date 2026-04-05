@@ -66,24 +66,32 @@
                 {% for col in tableColumns %}
                     <th>{{ attribute(col, 'label') }}</th>
                 {% endfor %}
-                <th></th>
+                {% if tableActions|length > 0 %}
+                    <th class="vortex-admin__actions" aria-label="Actions"></th>
+                {% endif %}
             </tr>
             </thead>
             <tbody>
             {% for row in records %}
+                {% set rowIndex = loop.index0 %}
                 <tr>
                     {% for col in tableColumns %}
                         <td>{{ attribute(row, attribute(col, 'name')) }}</td>
                     {% endfor %}
-                    <td class="vortex-admin__actions">
-                        {% if row.id is defined %}
-                            <a href="{{ route('admin.resource.edit', { slug: slug, id: row.id }) }}">Edit</a>
-                            <form method="post" action="{{ route('admin.resource.destroy', { slug: slug, id: row.id }) }}" class="vortex-admin__inline-form">
-                                <input type="hidden" name="_csrf" value="{{ csrfToken }}">
-                                <button type="submit" class="vortex-admin__linkbtn">Delete</button>
-                            </form>
-                        {% endif %}
-                    </td>
+                    {% if tableActions|length > 0 %}
+                        <td class="vortex-admin__actions">
+                            {% for act in tableRowActions[rowIndex] %}
+                                {% if act.kind == 'link' %}
+                                    <a href="{{ route(act.route, act.routeParams) }}">{{ act.label }}</a>
+                                {% else %}
+                                    <form method="post" action="{{ route(act.route, act.routeParams) }}" class="vortex-admin__inline-form">
+                                        <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+                                        <button type="submit" class="vortex-admin__linkbtn">{{ act.label }}</button>
+                                    </form>
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                    {% endif %}
                 </tr>
             {% endfor %}
             </tbody>

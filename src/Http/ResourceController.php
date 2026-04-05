@@ -68,16 +68,30 @@ final class ResourceController extends Controller
             $records[] = $this->rowPayload($row, $table);
         }
 
+        $tableRowActions = [];
+        foreach ($records as $record) {
+            $cells = [];
+            foreach ($table->actions() as $action) {
+                $resolved = $action->resolve($slug, $record);
+                if ($resolved !== null) {
+                    $cells[] = $resolved;
+                }
+            }
+            $tableRowActions[] = $cells;
+        }
+
         return View::html('admin.resource.index', [
             'title' => $class::pluralLabel(),
             'slug' => $slug,
             'tableColumns' => $table->columns(),
             'tableFilters' => $table->filters(),
+            'tableActions' => $table->actions(),
             'filterValues' => $filterValues,
             'perPageOptions' => $perPageOptions,
             'tablePerPageCurrent' => $perPage,
             'pagination' => $paginator,
             'records' => $records,
+            'tableRowActions' => $tableRowActions,
             'csrfToken' => Csrf::token(),
         ]);
     }

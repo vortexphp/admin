@@ -23,6 +23,7 @@ final class TableFiltersTest extends TestCase
         $with = $base->withFilters(TextFilter::make('title', 'Search'));
         self::assertSame(['id', 'title'], $with->columnNames());
         self::assertCount(1, $with->filters());
+        self::assertCount(2, $with->actions());
         self::assertSame('f_title', $with->filters()[0]->queryParam());
         self::assertSame('Search', $with->filters()[0]->label);
     }
