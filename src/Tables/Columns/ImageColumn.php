@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Vortex\Admin\Tables\Columns;
 
+use Vortex\Admin\Support\PublicAssetUrl;
 use Vortex\Admin\Tables\TableColumn;
 
 /**
- * Renders a stored URL or site-relative path (e.g. {@code /storage/covers/x.jpg}) as a thumbnail.
+ * Renders a stored URL or site path as a thumbnail. Relative values become root-absolute paths;
+ * with {@code app.url} configured they become full {@code https://…} URLs for {@code <img src>}.
  * Unsafe {@code javascript:} / {@code data:} URLs are blanked for display.
  */
 final class ImageColumn extends TableColumn
@@ -70,18 +72,7 @@ final class ImageColumn extends TableColumn
 
     public function formatCellValue(mixed $value): mixed
     {
-        if ($value === null || $value === '') {
-            return '';
-        }
-        $s = trim((string) $value);
-        if ($s === '') {
-            return '';
-        }
-        if (preg_match('#^(javascript:|data:|vbscript:)#i', $s) === 1) {
-            return '';
-        }
-
-        return $s;
+        return PublicAssetUrl::forImgSrc($value);
     }
 
     public function toViewArray(): array

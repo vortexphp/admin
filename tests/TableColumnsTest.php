@@ -16,6 +16,7 @@ use Vortex\Admin\Tables\Columns\NumericColumn;
 use Vortex\Admin\Tables\Columns\TextColumn;
 use Vortex\Admin\Tables\Columns\ToggleColumn;
 use Vortex\Admin\Tables\Table;
+use Vortex\Config\Repository;
 use Vortex\Database\Model;
 
 final class TableColumnsTest extends TestCase
@@ -84,7 +85,9 @@ final class TableColumnsTest extends TestCase
     {
         $c = ImageColumn::make('thumb', 'Thumbnail')->size(64, 96)->openOriginalInNewTab();
         self::assertSame('https://cdn.example/x.png', $c->formatCellValue('https://cdn.example/x.png'));
+        self::assertSame('//cdn.example/x.png', $c->formatCellValue('//cdn.example/x.png'));
         self::assertSame('/uploads/a.jpg', $c->formatCellValue('/uploads/a.jpg'));
+        self::assertSame('/uploads/rel.jpg', $c->formatCellValue('uploads/rel.jpg'));
         self::assertSame('', $c->formatCellValue(null));
         self::assertSame('', $c->formatCellValue('javascript:alert(1)'));
         self::assertSame('', $c->formatCellValue('data:text/html,base64'));
@@ -93,6 +96,24 @@ final class TableColumnsTest extends TestCase
         self::assertSame(64, $v['maxHeightPx']);
         self::assertSame(96, $v['maxWidthPx']);
         self::assertTrue($v['openOriginalInNewTab']);
+    }
+
+    public function testImageColumnUsesAbsoluteUrlFromAppConfig(): void
+    {
+        $base = sys_get_temp_dir() . '/vortex_imgurl_' . bin2hex(random_bytes(3));
+        mkdir($base . '/config', 0777, true);
+        file_put_contents(
+            $base . '/config/app.php',
+            "<?php\nreturn ['url' => 'https://forum.example'];\n",
+        );
+        Repository::setInstance(new Repository($base . '/config'));
+        try {
+            $c = ImageColumn::make('avatar');
+            self::assertSame('https://forum.example/uploads/z.webp', $c->formatCellValue('uploads/z.webp'));
+            self::assertSame('https://forum.example/uploads/z.webp', $c->formatCellValue('/uploads/z.webp'));
+        } finally {
+            Repository::forgetInstance();
+        }
     }
 
     public function testColorColumnNormalizesHex(): void

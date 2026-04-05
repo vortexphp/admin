@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Vortex\Admin\Tables\Columns;
 
+use Vortex\Admin\Support\PublicAssetUrl;
 use Vortex\Admin\Tables\TableColumn;
 use Vortex\Database\Model;
 
@@ -175,18 +176,7 @@ final class BelongsToImageColumn extends TableColumn
 
     public function formatCellValue(mixed $value): mixed
     {
-        if ($value === null || $value === '') {
-            return '';
-        }
-        $s = trim((string) $value);
-        if ($s === '') {
-            return '';
-        }
-        if (preg_match('#^(javascript:|data:|vbscript:)#i', $s) === 1) {
-            return '';
-        }
-
-        return $s;
+        return PublicAssetUrl::forImgSrc($value);
     }
 
     /**
