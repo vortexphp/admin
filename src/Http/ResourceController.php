@@ -52,6 +52,11 @@ final class ResourceController extends AdminHttpController
         $perPage = $perPageResolution['perPage'];
         $perPageOptions = $perPageResolution['options'];
 
+        $withPaths = self::uniqueEagerPaths([...$table->eagerRelationPaths(), ...$class::indexQueryWith()]);
+        if ($withPaths !== []) {
+            $query->with($withPaths);
+        }
+
         $paginator = $query->paginate($page, $perPage);
         $listQuery = $filterValues;
         if (count($perPageOptions) > 1) {
@@ -138,6 +143,22 @@ final class ResourceController extends AdminHttpController
         }
 
         return ['perPage' => $perPage, 'options' => $options];
+    }
+
+    /**
+     * @param list<string> $paths
+     * @return list<string>
+     */
+    private static function uniqueEagerPaths(array $paths): array
+    {
+        $seen = [];
+        foreach ($paths as $p) {
+            if (is_string($p) && $p !== '') {
+                $seen[$p] = true;
+            }
+        }
+
+        return array_keys($seen);
     }
 
     public function create(string $slug): Response
@@ -261,7 +282,7 @@ final class ResourceController extends AdminHttpController
     {
         $out = [];
         foreach ($table->columns() as $col) {
-            $raw = $row->{$col->name} ?? null;
+            $raw = $col->resolveRowValue($row);
             $out[$col->name] = $col->formatCellValue($raw);
         }
         if (! array_key_exists('id', $out) && isset($row->id)) {

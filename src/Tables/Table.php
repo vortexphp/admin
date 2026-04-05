@@ -79,4 +79,21 @@ final class Table
     {
         return array_map(static fn (TableColumn $c): string => $c->name, $this->columns);
     }
+
+    /**
+     * @return list<string>
+     */
+    public function eagerRelationPaths(): array
+    {
+        $seen = [];
+        foreach ($this->columns as $c) {
+            foreach ($c->eagerRelationPaths() as $p) {
+                if ($p !== '' && ! isset($seen[$p])) {
+                    $seen[$p] = true;
+                }
+            }
+        }
+
+        return array_keys($seen);
+    }
 }

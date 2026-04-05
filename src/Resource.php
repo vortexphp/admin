@@ -72,6 +72,16 @@ abstract class Resource
     abstract public static function form(): Form;
 
     /**
+     * Extra {@see \Vortex\Database\QueryBuilder::with()} paths for the index query (merged with paths inferred from {@see table()} columns).
+     *
+     * @return list<string>
+     */
+    public static function indexQueryWith(): array
+    {
+        return [];
+    }
+
+    /**
      * Form field values for Twig. {@code $record} is null on create. Override to hide or normalize attributes (e.g. blank password on edit).
      *
      * @return array<string, mixed>

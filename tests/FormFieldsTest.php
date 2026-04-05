@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Vortex\Admin\Tests;
 
 use PHPUnit\Framework\TestCase;
+use Vortex\Admin\Forms\BelongsToSelectField;
 use Vortex\Admin\Forms\CheckboxField;
 use Vortex\Admin\Forms\DateField;
 use Vortex\Admin\Forms\Form;
@@ -18,6 +19,7 @@ use Vortex\Admin\Forms\TagsField;
 use Vortex\Admin\Forms\TextField;
 use Vortex\Admin\Forms\ToggleField;
 use Vortex\Admin\Forms\UploadField;
+use Vortex\Database\Model;
 
 final class FormFieldsTest extends TestCase
 {
@@ -109,4 +111,36 @@ final class FormFieldsTest extends TestCase
         self::assertTrue($k['html']);
         self::assertTrue($k['tags']);
     }
+
+    public function testBelongsToSelectBuildsOptionsFromLoader(): void
+    {
+        $a = new SelectOptionModel();
+        $a->id = 1;
+        $a->title = 'One';
+        $b = new SelectOptionModel();
+        $b->id = 2;
+        $b->title = 'Two';
+        $f = BelongsToSelectField::make('category_id', SelectOptionModel::class, 'Category', 'title', 'id')
+            ->withoutOrder()
+            ->usingRelatedLoader(static fn (): array => [$a, $b]);
+        $v = $f->toViewArray();
+        self::assertSame('select', $v['inputKind']);
+        self::assertSame(['1' => 'One', '2' => 'Two'], $v['options']);
+    }
+
+    public function testBelongsToSelectNullableNormalizesEmptyToNull(): void
+    {
+        $f = BelongsToSelectField::make('category_id', SelectOptionModel::class)
+            ->nullable()
+            ->withoutOrder()
+            ->usingRelatedLoader(static fn (): array => []);
+        self::assertNull($f->normalizeRequestValue(null));
+        self::assertNull($f->normalizeRequestValue(''));
+    }
+}
+
+final class SelectOptionModel extends Model
+{
+    /** @var list<string> */
+    protected static array $fillable = ['title'];
 }

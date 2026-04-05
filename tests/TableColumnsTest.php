@@ -6,12 +6,15 @@ namespace Vortex\Admin\Tests;
 
 use PHPUnit\Framework\TestCase;
 use Vortex\Admin\Tables\Columns\BadgeColumn;
+use Vortex\Admin\Tables\Columns\BelongsToColumn;
 use Vortex\Admin\Tables\Columns\BooleanColumn;
 use Vortex\Admin\Tables\Columns\ColorColumn;
 use Vortex\Admin\Tables\Columns\DatetimeColumn;
 use Vortex\Admin\Tables\Columns\NumericColumn;
 use Vortex\Admin\Tables\Columns\TextColumn;
 use Vortex\Admin\Tables\Columns\ToggleColumn;
+use Vortex\Admin\Tables\Table;
+use Vortex\Database\Model;
 
 final class TableColumnsTest extends TestCase
 {
@@ -77,4 +80,72 @@ final class TableColumnsTest extends TestCase
         self::assertSame('Alpha', $v['badges']['a']['label']);
         self::assertSame('success', $v['badges']['a']['tone']);
     }
+
+    public function testBelongsToColumnUsesRelationAttribute(): void
+    {
+        $post = new BelongsToDemoPost();
+        $cat = new BelongsToDemoCategory();
+        $cat->name = 'Announcements';
+        $post->category = $cat;
+        $col = BelongsToColumn::make('category', 'Category', 'name');
+        $raw = $col->resolveRowValue($post);
+        self::assertSame('Announcements', $col->formatCellValue($raw));
+        self::assertSame(['category'], $col->eagerRelationPaths());
+    }
+
+    public function testBelongsToColumnFallsBackToForeignKeyWhenUnloaded(): void
+    {
+        $post = new BelongsToDemoPost();
+        $post->category_id = 42;
+        $col = BelongsToColumn::make('category');
+        $raw = $col->resolveRowValue($post);
+        self::assertSame('42', $col->formatCellValue($raw));
+    }
+
+    public function testTableCollectsEagerPathsFromColumns(): void
+    {
+        $t = Table::make(
+            TextColumn::make('id'),
+            BelongsToColumn::make('author'),
+            BelongsToColumn::make('category'),
+        );
+        self::assertEqualsCanonicalizing(['author', 'category'], $t->eagerRelationPaths());
+    }
+
+    public function testBelongsToNestedPath(): void
+    {
+        $post = new BelongsToDemoPost();
+        $author = new BelongsToDemoUser();
+        $country = new BelongsToDemoCountry();
+        $country->code = 'BG';
+        $author->country = $country;
+        $post->author = $author;
+        $col = BelongsToColumn::make('author.country', 'Origin', 'code');
+        self::assertSame('BG', $col->formatCellValue($col->resolveRowValue($post)));
+        self::assertSame(['author.country'], $col->eagerRelationPaths());
+    }
+}
+
+final class BelongsToDemoPost extends Model
+{
+    /** @var list<string> */
+    protected static array $fillable = ['title', 'category_id'];
+}
+
+final class BelongsToDemoCategory extends Model
+{
+    /** @var list<string> */
+    protected static array $fillable = ['name'];
+}
+
+final class BelongsToDemoUser extends Model
+{
+    /** @var list<string> */
+    protected static array $fillable = ['name', 'country_id'];
+}
+
+final class BelongsToDemoCountry extends Model
+{
+    /** @var list<string> */
+    protected static array $fillable = ['code'];
 }
