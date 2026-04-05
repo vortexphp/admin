@@ -7,6 +7,7 @@ namespace Vortex\Admin\Tests;
 use PHPUnit\Framework\TestCase;
 use Vortex\Admin\Tables\Columns\BadgeColumn;
 use Vortex\Admin\Tables\Columns\BooleanColumn;
+use Vortex\Admin\Tables\Columns\ColorColumn;
 use Vortex\Admin\Tables\Columns\DatetimeColumn;
 use Vortex\Admin\Tables\Columns\NumericColumn;
 use Vortex\Admin\Tables\Columns\TextColumn;
@@ -38,6 +39,19 @@ final class TableColumnsTest extends TestCase
     {
         $c = TextColumn::make('body', null, 5);
         self::assertSame('1234…', $c->formatCellValue('123456789'));
+    }
+
+    public function testColorColumnNormalizesHex(): void
+    {
+        $c = ColorColumn::make('accent');
+        self::assertSame('#10b981', $c->formatCellValue('#10B981'));
+        self::assertSame('#10b981', $c->formatCellValue('10B981'));
+        self::assertSame('', $c->formatCellValue('linear-gradient(red,blue)'));
+        self::assertSame('', $c->formatCellValue('#gg0000'));
+        self::assertSame('', $c->formatCellValue(''));
+        $v = $c->toViewArray();
+        self::assertSame('color', $v['kind']);
+        self::assertArrayHasKey('emptyLabel', $v);
     }
 
     public function testBadgeColumnKeepsRawValue(): void

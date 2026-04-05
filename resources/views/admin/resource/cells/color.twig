@@ -1,0 +1,8 @@
+{% if cell is not null and cell != '' %}
+    <span class="inline-flex items-center gap-2 whitespace-nowrap">
+        <span class="inline-block h-5 w-5 shrink-0 rounded border border-zinc-600 shadow-sm ring-1 ring-black/25" style="background-color: {{ cell }};" title="{{ cell }}"></span>
+        <code class="text-xs font-normal text-zinc-400">{{ cell }}</code>
+    </span>
+{% else %}
+    <span class="text-zinc-500">{{ col.emptyLabel|default('—') }}</span>
+{% endif %}
