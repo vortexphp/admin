@@ -56,6 +56,29 @@ final class ResourceRegistry
     }
 
     /**
+     * Sidebar rows for resources that {@see Resource::showInNavigation()} (order matches slug registry).
+     *
+     * @return list<array{slug: string, label: string, navIcon: string|null}>
+     */
+    public static function navigationSidebarEntries(): array
+    {
+        $out = [];
+        foreach (self::slugToClass() as $s => $class) {
+            if (! $class::showInNavigation()) {
+                continue;
+            }
+            $icon = $class::navigationIcon();
+            $out[] = [
+                'slug' => $s,
+                'label' => $class::pluralLabel(),
+                'navIcon' => is_string($icon) && $icon !== '' ? $icon : null,
+            ];
+        }
+
+        return $out;
+    }
+
+    /**
      * @param array<string, class-string<Resource>> $out
      * @param class-string|mixed $class
      */

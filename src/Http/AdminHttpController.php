@@ -22,10 +22,7 @@ abstract class AdminHttpController extends Controller
      */
     protected function adminView(string $name, array $data = [], int $status = 200): Response
     {
-        $sidebarResources = [];
-        foreach (ResourceRegistry::slugToClass() as $s => $class) {
-            $sidebarResources[] = ['slug' => $s, 'label' => $class::pluralLabel()];
-        }
+        $sidebarResources = ResourceRegistry::navigationSidebarEntries();
 
         return View::html($name, array_merge($data, [
             'adminNavigation' => $this->navigation->toViewArray(),

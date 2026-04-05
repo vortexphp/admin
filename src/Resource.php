@@ -43,6 +43,23 @@ abstract class Resource
     }
 
     /**
+     * When false, the resource is still registered (CRUD routes) but omitted from the default admin sidebar.
+     */
+    public static function showInNavigation(): bool
+    {
+        return true;
+    }
+
+    /**
+     * Icon key for Twig macro {@code admin/partials/icon_svg.twig} (e.g. {@code folder}, {@code users}).
+     * Return null to use the slug fallback map in {@code admin/partials/nav_resource_icon.twig}.
+     */
+    public static function navigationIcon(): ?string
+    {
+        return null;
+    }
+
+    /**
      * Index table: use {@see Table} and column classes under {@see \Vortex\Admin\Tables\Columns} (e.g. {@see \Vortex\Admin\Tables\Columns\TextColumn}).
      */
     abstract public static function table(): Table;

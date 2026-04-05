@@ -12,8 +12,13 @@
             <p class="mb-1.5 px-3 text-[0.65rem] font-semibold uppercase tracking-wider text-zinc-500">Resources</p>
             <div class="space-y-0.5">
                 {% for r in adminSidebarResources %}
+                    {% set nav_icon_class = slug is defined and slug == r.slug ? 'h-5 w-5 shrink-0 text-zinc-300' : 'h-5 w-5 shrink-0 text-zinc-500' %}
                     <a href="{{ route('admin.resource.index', { slug: r.slug }) }}" class="flex items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-colors {% if slug is defined and slug == r.slug %}bg-zinc-800/80 text-zinc-50{% else %}text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100{% endif %}">
-                        {% include 'admin/partials/nav_resource_icon.twig' with { slug: r.slug, icon_class: slug is defined and slug == r.slug ? 'h-5 w-5 shrink-0 text-zinc-300' : 'h-5 w-5 shrink-0 text-zinc-500' } %}
+                        {% if r.navIcon is defined and r.navIcon %}
+                            {{ icons.r(r.navIcon, nav_icon_class) }}
+                        {% else %}
+                            {% include 'admin/partials/nav_resource_icon.twig' with { slug: r.slug, icon_class: nav_icon_class } %}
+                        {% endif %}
                         <span>{{ r.label }}</span>
                     </a>
                 {% endfor %}
