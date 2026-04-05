@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Vortex\Admin\Tables;
 
-final class DeleteAction extends TableRowAction
+/** POST form to the resource destroy route (CSRF + confirm in the index template). */
+final class DeleteRowAction extends TableRowAction
 {
     public static function make(?string $label = null): self
     {

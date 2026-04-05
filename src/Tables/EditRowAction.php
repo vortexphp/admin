@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Vortex\Admin\Tables;
 
-final class EditAction extends TableRowAction
+/** GET link to the resource edit screen. */
+final class EditRowAction extends TableRowAction
 {
     public static function make(?string $label = null): self
     {

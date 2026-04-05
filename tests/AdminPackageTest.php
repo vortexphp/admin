@@ -22,6 +22,7 @@ final class AdminPackageTest extends TestCase
         self::assertSame([
             'resources/admin.css' => 'css/admin.css',
             'resources/admin.tables.js' => 'js/admin.tables.js',
+            'resources/admin.modal.js' => 'js/admin.modal.js',
         ], $pkg->publicAssets());
     }
 }

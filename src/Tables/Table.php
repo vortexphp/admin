@@ -28,7 +28,7 @@ final class Table
         return new self(
             array_values($columns),
             [],
-            [EditAction::make(), DeleteAction::make()],
+            [EditRowAction::make(), DeleteRowAction::make()],
             null,
             true,
         );

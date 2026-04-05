@@ -139,11 +139,29 @@
                             {% if tableActions|length > 0 %}
                                 <td data-adm-col="__actions" class="whitespace-nowrap px-4 py-3 text-right">
                                     {% for act in tableRowActions[rowIndex] %}
+                                        {% set actIdx = loop.index0 %}
                                         {% if act.kind == 'link' %}
                                             <a class="mr-3 inline-flex items-center gap-1.5 text-sm text-zinc-300 underline decoration-zinc-600 underline-offset-2 transition-colors hover:text-white" href="{{ route(act.route, act.routeParams) }}">
                                                 {{ icons.r('pencil', 'h-4 w-4 shrink-0 text-zinc-500') }}
                                                 <span>{{ act.label }}</span>
                                             </a>
+                                        {% elseif act.kind == 'modal' %}
+                                            {% set modalId = 'adm_mtpl_' ~ slug ~ '_' ~ rowIndex ~ '_' ~ actIdx %}
+                                            <button type="button"
+                                                    class="mr-3 inline-flex cursor-pointer items-center gap-1.5 border-0 bg-transparent p-0 text-sm underline underline-offset-2 transition-colors {% if act.danger|default(false) %}text-red-400/95 decoration-red-500/50 hover:text-red-300{% else %}text-zinc-300 decoration-zinc-600 hover:text-white{% endif %}"
+                                                    data-adm-modal-open
+                                                    data-adm-modal-template="{{ modalId }}"
+                                                    data-adm-modal-title="{{ act.title|e('html_attr') }}">
+                                                {% if act.danger|default(false) %}
+                                                    {{ icons.r('trash', 'h-4 w-4 shrink-0 text-red-400') }}
+                                                {% else %}
+                                                    {{ icons.r('document', 'h-4 w-4 shrink-0 text-zinc-500') }}
+                                                {% endif %}
+                                                <span>{{ act.label }}</span>
+                                            </button>
+                                            <template id="{{ modalId }}">
+                                                {% include 'admin/partials/modal_row_content.twig' with { content: act.content, modalId: modalId, slug: slug, csrfToken: csrfToken } only %}
+                                            </template>
                                         {% else %}
                                             <form method="post" action="{{ route(act.route, act.routeParams) }}" class="inline-flex items-center" data-adm-confirm="Delete this record? This cannot be undone.">
                                                 <input type="hidden" name="_csrf" value="{{ csrfToken }}">

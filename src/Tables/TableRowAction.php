@@ -20,15 +20,10 @@ abstract class TableRowAction
     }
 
     /**
-     * {@code link} — GET anchor; {@code post} — destructive/other POST with CSRF.
+     * {@code link} — GET anchor; {@code post} — POST with CSRF; {@code modal} — opens the admin dialog ({@see ModalRowAction}).
      *
      * @param array<string, mixed> $row Same shape as index row payload (includes {@code id} when present).
-     * @return array{
-     *     kind: 'link'|'post',
-     *     label: string,
-     *     route: string,
-     *     routeParams: array<string, string|int|float>
-     * }|null
+     * @return array<string, mixed>|null
      */
     abstract public function resolve(string $slug, array $row): ?array;
 }
