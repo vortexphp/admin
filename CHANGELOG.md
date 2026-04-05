@@ -16,5 +16,5 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Resource overrides: `tablePerPage()`, `tablePerPageOptions()` for page size defaults and dropdown.
 - Explicit forms: `Form`, `FormField` subclasses (`TextField`, `TextareaField`), `Resource::form()`.
 - Index table definition: `Table`, `TableColumn`, `Resource::table()`.
-- `ResourceRegistry` + `config/admin.php` for Filament-style resources.
+- `ResourceRegistry` + `config/admin.php` for Filament-style resources; **`admin.discover`** auto-registers `Resource` classes under configured paths (default `true` → **`app/Admin/Resources`**).
 - `AdminPackage` (routes, Twig paths, `publish:assets` for CSS).

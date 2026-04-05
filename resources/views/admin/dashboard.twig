@@ -6,7 +6,7 @@
 
 {% block body %}
 <div class="mx-auto max-w-3xl">
-    <p class="text-sm leading-relaxed text-zinc-400">Register resource classes in <code class="rounded-md bg-zinc-900 px-1.5 py-0.5 font-mono text-xs text-zinc-300 ring-1 ring-zinc-800">config/admin.php</code> (<code class="rounded-md bg-zinc-900 px-1.5 py-0.5 font-mono text-xs text-zinc-300 ring-1 ring-zinc-800">resources</code> key).</p>
+    <p class="text-sm leading-relaxed text-zinc-400">Resources load from <code class="rounded-md bg-zinc-900 px-1.5 py-0.5 font-mono text-xs text-zinc-300 ring-1 ring-zinc-800">config/admin.php</code> (<code class="rounded-md bg-zinc-900 px-1.5 py-0.5 font-mono text-xs text-zinc-300 ring-1 ring-zinc-800">discover</code> → <code class="rounded-md bg-zinc-900 px-1.5 py-0.5 font-mono text-xs text-zinc-300 ring-1 ring-zinc-800">app/Admin/Resources</code>, plus optional <code class="rounded-md bg-zinc-900 px-1.5 py-0.5 font-mono text-xs text-zinc-300 ring-1 ring-zinc-800">resources</code> list).</p>
 
     {% if resources is not empty %}
         <ul class="mt-8 divide-y divide-zinc-800/80 rounded-xl border border-zinc-800/80 bg-zinc-900/20">

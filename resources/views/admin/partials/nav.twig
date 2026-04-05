@@ -1,4 +1,23 @@
 <div class="space-y-6">
+    <div class="space-y-0.5">
+        <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-colors {% if slug is not defined %}bg-zinc-800/80 text-zinc-50{% else %}text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100{% endif %}">
+            <span>Overview</span>
+        </a>
+    </div>
+
+    {% if adminSidebarResources is not empty %}
+        <div>
+            <p class="mb-1.5 px-3 text-[0.65rem] font-semibold uppercase tracking-wider text-zinc-500">Resources</p>
+            <div class="space-y-0.5">
+                {% for r in adminSidebarResources %}
+                    <a href="{{ route('admin.resource.index', { slug: r.slug }) }}" class="flex items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-colors {% if slug is defined and slug == r.slug %}bg-zinc-800/80 text-zinc-50{% else %}text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100{% endif %}">
+                        <span>{{ r.label }}</span>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
+
     {% for entry in adminNavigation %}
         {% if entry.kind == 'group' %}
             <div>

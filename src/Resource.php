@@ -11,7 +11,7 @@ use Vortex\Database\Model;
 /**
  * Filament-style resource: binds an Eloquent-like {@see Model} to admin CRUD routes.
  *
- * Register concrete classes in {@code config/admin.php} under {@code resources}.
+ * Register in {@code config/admin.php} ({@code resources}) and/or auto-discover via {@code discover} (see {@see ResourceDiscovery}).
  */
 abstract class Resource
 {

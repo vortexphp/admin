@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace Vortex\Admin;
 
+use ReflectionClass;
 use Vortex\Config\Repository;
+use Vortex\Database\Model;
 
 /**
- * Maps URL slugs to {@see Resource} classes from {@code admin.resources} config.
+ * Maps URL slugs to {@see Resource} classes from {@code admin.resources} plus optional {@see ResourceDiscovery}.
  */
 final class ResourceRegistry
 {
@@ -20,7 +22,7 @@ final class ResourceRegistry
     }
 
     /**
-     * @return array<string, class-string<Resource>> ordered as in config
+     * @return array<string, class-string<Resource>> explicit config order first, then discovered (by slug).
      */
     public static function slugToClass(): array
     {
@@ -28,32 +30,18 @@ final class ResourceRegistry
             return self::$map;
         }
 
+        $out = [];
+
         /** @var mixed $raw */
         $raw = Repository::get('admin.resources', []);
-        if (! is_array($raw)) {
-            return self::$map = [];
+        if (is_array($raw)) {
+            foreach ($raw as $class) {
+                self::tryRegister($out, $class);
+            }
         }
 
-        $out = [];
-        foreach ($raw as $class) {
-            if (! is_string($class) || $class === '' || ! class_exists($class)) {
-                continue;
-            }
-            if (! is_subclass_of($class, Resource::class)) {
-                continue;
-            }
-
-            $slug = $class::slug();
-            if ($slug === '' || isset($out[$slug])) {
-                continue;
-            }
-
-            $modelClass = $class::model();
-            if (! is_subclass_of($modelClass, \Vortex\Database\Model::class)) {
-                continue;
-            }
-
-            $out[$slug] = $class;
+        foreach (ResourceDiscovery::classes() as $class) {
+            self::tryRegister($out, $class);
         }
 
         return self::$map = $out;
@@ -65,5 +53,34 @@ final class ResourceRegistry
     public static function classForSlug(string $slug): ?string
     {
         return self::slugToClass()[$slug] ?? null;
+    }
+
+    /**
+     * @param array<string, class-string<Resource>> $out
+     * @param class-string|mixed $class
+     */
+    private static function tryRegister(array &$out, mixed $class): void
+    {
+        if (! is_string($class) || $class === '' || ! class_exists($class)) {
+            return;
+        }
+        if (! is_subclass_of($class, Resource::class)) {
+            return;
+        }
+        if ((new ReflectionClass($class))->isAbstract()) {
+            return;
+        }
+
+        $slug = $class::slug();
+        if ($slug === '' || isset($out[$slug])) {
+            return;
+        }
+
+        $modelClass = $class::model();
+        if (! is_subclass_of($modelClass, Model::class)) {
+            return;
+        }
+
+        $out[$slug] = $class;
     }
 }

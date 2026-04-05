@@ -67,9 +67,17 @@ Arbitrary URLs use **`NavLink`** or **`$nav->link('Label', 'https://…')`**. Ev
 declare(strict_types=1);
 
 return [
+    // Scan app/Admin/Resources/*.php (PSR-4 class per file from composer.json "autoload")
+    'discover' => true,
+
+    // Optional: extra classes or duplicates (explicit entries win on slug conflicts)
     'resources' => [
-        App\Admin\Resources\PostResource::class,
+        // App\Admin\Resources\PostResource::class,
     ],
+
+    // Instead of or in addition to true, use path(s) relative to the project root:
+    // 'discover' => ['app/Admin/Resources', 'src/More/AdminResources'],
+    // Absolute paths are allowed when needed.
 ];
 ```
 
