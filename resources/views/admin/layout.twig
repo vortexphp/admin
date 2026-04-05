@@ -7,22 +7,27 @@
     <link rel="stylesheet" href="/css/admin.css">
 </head>
 <body class="min-h-full bg-zinc-950 text-zinc-100 antialiased">
+{% import 'admin/partials/icon_svg.twig' as adm_icons %}
 <div class="flex min-h-screen">
-    <aside class="flex w-60 shrink-0 flex-col border-r border-zinc-800/80 bg-zinc-950 lg:w-64">
-        <div class="flex h-14 items-center border-b border-zinc-800/80 px-4 lg:h-16 lg:px-5">
-            <a href="{{ route('admin.dashboard') }}" class="text-sm font-semibold tracking-tight text-zinc-50 hover:text-white">Admin</a>
+    <aside class="adm-aside-frame flex w-60 shrink-0 flex-col border-r border-zinc-800/80 bg-zinc-950 lg:w-64">
+        <div class="flex h-14 items-center gap-2.5 border-b border-zinc-800/80 px-4 lg:h-16 lg:px-5">
+            <a href="{{ route('admin.dashboard') }}" class="inline-flex items-center gap-2.5 text-sm font-semibold tracking-tight text-zinc-50 hover:text-white" aria-label="Admin dashboard">
+                {{ adm_icons.r('squares', 'h-6 w-6 shrink-0 text-emerald-400/90') }}
+                <span>Admin</span>
+            </a>
         </div>
         <nav class="flex-1 overflow-y-auto p-3 lg:p-4" aria-label="Admin">
             {% include 'admin/partials/nav.twig' %}
         </nav>
-        <div class="hidden border-t border-zinc-800/80 px-4 py-3 text-xs text-zinc-500 lg:block">
-            <span class="font-medium text-zinc-600">Vortex</span>
-            <span class="text-zinc-600"> · </span>
-            <span>control panel</span>
+        <div class="hidden border-t border-zinc-700/70 bg-zinc-950/50 px-4 py-3 text-xs text-zinc-500 ring-1 ring-zinc-900/80 lg:block">
+            <span class="inline-flex items-center gap-2">
+                {{ adm_icons.r('squares', 'h-4 w-4 shrink-0 text-zinc-600') }}
+                <span><span class="font-medium text-zinc-500">Vortex</span><span class="text-zinc-600"> · </span>control panel</span>
+            </span>
         </div>
     </aside>
     <div class="flex min-w-0 flex-1 flex-col">
-        <header class="sticky top-0 z-10 border-b border-zinc-800/80 bg-zinc-950/90 px-5 py-4 backdrop-blur supports-[backdrop-filter]:bg-zinc-950/75 lg:px-8">
+        <header class="sticky top-0 z-10 border-b border-zinc-700/80 bg-zinc-950/90 px-5 py-4 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-zinc-950/75 lg:px-8">
             {% block header %}
                 <div class="flex flex-wrap items-start justify-between gap-4">
                     <div class="min-w-0 flex-1">
@@ -35,8 +40,10 @@
                 </div>
             {% endblock %}
         </header>
-        <main class="flex-1 px-5 py-6 lg:px-8 lg:py-8">
-            {% block body %}{% endblock %}
+        <main class="flex-1 px-4 py-5 lg:px-6 lg:py-6">
+            <div class="adm-shell rounded-xl border border-zinc-700/70 bg-zinc-900/15 p-4 shadow-inner ring-1 ring-zinc-800/80 lg:p-6">
+                {% block body %}{% endblock %}
+            </div>
         </main>
     </div>
 </div>

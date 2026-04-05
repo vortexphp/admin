@@ -9,6 +9,7 @@ use Vortex\Admin\Forms\FormField;
 use Vortex\Admin\Forms\UploadField;
 use Vortex\Admin\Resource;
 use Vortex\Admin\ResourceRegistry;
+use Vortex\Admin\Support\PublicAssetUrl;
 use Vortex\Admin\SqlIdentifier;
 use Vortex\Admin\Tables\Table;
 use Vortex\Admin\Tables\TableColumn;
@@ -283,6 +284,31 @@ final class ResourceController extends AdminHttpController
     }
 
     /**
+     * @param list<FormField> $fields
+     * @param array<string, mixed> $values
+     * @return array<string, string> upload field name => URL suitable for browsers (absolute when {@code app.url} is set)
+     */
+    private static function uploadFieldPublicUrls(array $fields, array $values): array
+    {
+        $out = [];
+        foreach ($fields as $f) {
+            if (! $f instanceof UploadField) {
+                continue;
+            }
+            $raw = $values[$f->name] ?? null;
+            if (! is_string($raw) || $raw === '') {
+                continue;
+            }
+            $url = PublicAssetUrl::forImgSrc($raw);
+            if ($url !== '') {
+                $out[$f->name] = $url;
+            }
+        }
+
+        return $out;
+    }
+
+    /**
      * @param list<string> $paths
      * @return list<string>
      */
@@ -306,6 +332,7 @@ final class ResourceController extends AdminHttpController
         }
 
         $form = $class::form();
+        $values = $class::formValues(null);
 
         return $this->adminView('admin.resource.form', [
             'title' => 'Create ' . $class::label(),
@@ -316,7 +343,8 @@ final class ResourceController extends AdminHttpController
             ),
             'formMultipart' => $form->requiresMultipart(),
             'formRichEditors' => $form->richEditorAssets(),
-            'values' => $class::formValues(null),
+            'values' => $values,
+            'uploadPublicUrls' => self::uploadFieldPublicUrls($form->fields(), $values),
             'record' => null,
             'csrfToken' => Csrf::token(),
         ]);
@@ -353,6 +381,7 @@ final class ResourceController extends AdminHttpController
         }
 
         $form = $class::form();
+        $values = $class::formValues($record);
 
         return $this->adminView('admin.resource.form', [
             'title' => 'Edit ' . $class::label(),
@@ -363,7 +392,8 @@ final class ResourceController extends AdminHttpController
             ),
             'formMultipart' => $form->requiresMultipart(),
             'formRichEditors' => $form->richEditorAssets(),
-            'values' => $class::formValues($record),
+            'values' => $values,
+            'uploadPublicUrls' => self::uploadFieldPublicUrls($form->fields(), $values),
             'record' => $record,
             'csrfToken' => Csrf::token(),
         ]);

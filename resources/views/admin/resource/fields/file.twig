@@ -1,6 +1,46 @@
+{% set stored = values[field.name]|default('') %}
+{% set pub = uploadPublicUrls[field.name]|default('') %}
+{% set looks_image = stored matches '/\\.(gif|jpe?g|png|webp|avif|svg)$/i' %}
+
 <label class="text-xs font-medium text-zinc-500" for="field_{{ field.name }}">{{ field.label }}</label>
-<input id="field_{{ field.name }}" type="file" name="{{ field.name }}" accept="{{ field.accept|default('*/*') }}"
-       class="mt-1 block w-full text-sm text-zinc-300 file:mr-3 file:rounded-lg file:border-0 file:bg-zinc-800 file:px-3 file:py-2 file:text-sm file:text-zinc-200 hover:file:bg-zinc-700">
-{% if values[field.name] %}
-    <p class="mt-1 text-xs text-zinc-500">Current file: <span class="font-mono text-zinc-400">{{ values[field.name] }}</span></p>
+
+{% if stored %}
+    <div id="field_{{ field.name }}_current" class="mt-1 space-y-1">
+        <div class="flex flex-wrap items-center gap-2">
+            {% if pub and looks_image %}
+                <img src="{{ pub }}" alt="" loading="lazy" width="28" height="28" class="h-7 w-7 shrink-0 rounded object-cover ring-1 ring-zinc-700/80">
+            {% endif %}
+            <span class="min-w-0 break-all font-mono text-xs text-zinc-400">{{ stored }}</span>
+            {% if pub %}
+                <a href="{{ pub }}" target="_blank" rel="noopener noreferrer" class="shrink-0 text-xs font-medium text-zinc-500 hover:text-zinc-200">Open</a>
+            {% endif %}
+        </div>
+        {% if pub %}
+            <p class="break-all font-mono text-[0.65rem] leading-snug text-zinc-600">{{ pub }}</p>
+        {% endif %}
+    </div>
 {% endif %}
+
+<div class="relative mt-1.5 min-h-[2.5rem] rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 shadow-sm focus-within:border-zinc-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-zinc-500/30">
+    <input id="field_{{ field.name }}"
+           type="file"
+           name="{{ field.name }}"
+           accept="{{ field.accept|default('*/*') }}"
+           class="absolute inset-0 z-10 h-full min-h-[2.5rem] w-full cursor-pointer opacity-0"
+           aria-describedby="{% if stored %}field_{{ field.name }}_current {% endif %}field_{{ field.name }}_hint"
+           onchange="(function(input){
+var el=document.getElementById('field_{{ field.name }}_picked');
+if(!input.files||!input.files.length){el.textContent='No file selected';el.className='mt-0.5 truncate text-xs text-zinc-500';return;}
+el.textContent=input.files[0].name;el.className='mt-0.5 truncate text-xs text-zinc-300';
+})(this)">
+    <div id="field_{{ field.name }}_hint" class="pointer-events-none pt-0.5">
+        <div class="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-0.5 text-xs">
+            <span class="text-zinc-500">{% if stored %}Replace{% else %}Choose file{% endif %}</span>
+            <span class="font-mono text-[0.65rem] leading-none text-zinc-600">{{ field.accept|default('*/*') }}</span>
+        </div>
+        <p id="field_{{ field.name }}_picked"
+           class="mt-0.5 truncate text-xs text-zinc-500"
+           role="status"
+           aria-live="polite">No file selected</p>
+    </div>
+</div>

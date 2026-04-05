@@ -1,0 +1,10 @@
+{% import 'admin/partials/icon_svg.twig' as icons %}
+{% set slug_icons = {
+    'categories': 'folder',
+    'posts': 'document',
+    'threads': 'chat',
+    'tags': 'tag',
+    'bookmarks': 'bookmark',
+    'users': 'users',
+} %}
+{{ icons.r(slug_icons[slug]|default('table'), icon_class|default('h-5 w-5 shrink-0 text-zinc-500')) }}

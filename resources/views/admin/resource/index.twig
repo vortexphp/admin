@@ -5,18 +5,30 @@
 {% block heading %}{{ title }}{% endblock %}
 
 {% block header_actions %}
-    <a href="{{ route('admin.resource.create', { slug: slug }) }}" class="inline-flex items-center rounded-lg bg-zinc-100 px-3.5 py-2 text-sm font-medium text-zinc-950 shadow-sm transition-colors hover:bg-white">Create</a>
+    {% import 'admin/partials/icon_svg.twig' as icons %}
+    <a href="{{ route('admin.resource.create', { slug: slug }) }}" class="inline-flex items-center gap-2 rounded-lg border border-zinc-600/50 bg-zinc-100 px-3.5 py-2 text-sm font-medium text-zinc-950 shadow-sm ring-1 ring-zinc-800/40 transition-colors hover:bg-white">
+        {{ icons.r('plus', 'h-4 w-4 shrink-0 text-zinc-700') }}
+        <span>Create</span>
+    </a>
 {% endblock %}
 
 {% block body %}
+{% import 'admin/partials/icon_svg.twig' as icons %}
 <div class="mx-auto max-w-7xl space-y-5">
     {% set flash = session_flash('admin_success') %}
     {% if flash %}
-        <p class="rounded-lg border border-zinc-700 bg-zinc-900/60 px-4 py-3 text-sm text-zinc-200 ring-1 ring-zinc-800/80">{{ flash }}</p>
+        <p class="flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/5 px-4 py-3 text-sm text-emerald-100/90 ring-1 ring-emerald-500/20">
+            {{ icons.r('check', 'h-4 w-4 shrink-0 text-emerald-400/90') }}
+            <span>{{ flash }}</span>
+        </p>
     {% endif %}
 
     {% if tableFilters|length > 0 or perPageOptions|length > 1 %}
-        <form method="get" action="{{ route('admin.resource.index', { slug: slug }) }}" class="flex flex-wrap items-end gap-4 rounded-xl border border-zinc-800/80 bg-zinc-900/25 p-4 ring-1 ring-zinc-800/60">
+        <form method="get" action="{{ route('admin.resource.index', { slug: slug }) }}" class="adm-filter-panel flex flex-wrap items-end gap-4 rounded-xl border border-zinc-700/80 bg-zinc-900/30 p-4 ring-1 ring-zinc-800/70">
+            <div class="mb-1 flex w-full items-center gap-2 border-b border-zinc-800/70 pb-3 text-xs font-semibold uppercase tracking-wide text-zinc-500">
+                {{ icons.r('funnel', 'h-4 w-4 shrink-0 text-zinc-500') }}
+                <span>Filters</span>
+            </div>
             {% if tableSort.persist %}
                 <input type="hidden" name="sort" value="{{ tableSort.key }}">
                 <input type="hidden" name="sort_dir" value="{{ tableSort.dir }}">
@@ -49,8 +61,14 @@
             {% endif %}
             {% if tableFilters|length > 0 %}
                 <div class="ml-auto flex items-center gap-2">
-                    <button type="submit" class="inline-flex items-center rounded-lg bg-zinc-100 px-3.5 py-2 text-sm font-medium text-zinc-950 shadow-sm hover:bg-white">Apply</button>
-                    <a href="{{ route('admin.resource.index', { slug: slug }) }}" class="inline-flex items-center rounded-lg border border-zinc-700 bg-transparent px-3.5 py-2 text-sm font-medium text-zinc-200 hover:bg-zinc-900/60">Reset</a>
+                    <button type="submit" class="inline-flex items-center gap-1.5 rounded-lg border border-zinc-600/40 bg-zinc-100 px-3.5 py-2 text-sm font-medium text-zinc-950 shadow-sm ring-1 ring-zinc-800/30 hover:bg-white">
+                        {{ icons.r('check', 'h-4 w-4 shrink-0 text-zinc-700') }}
+                        <span>Apply</span>
+                    </button>
+                    <a href="{{ route('admin.resource.index', { slug: slug }) }}" class="inline-flex items-center gap-1.5 rounded-lg border border-zinc-700 bg-transparent px-3.5 py-2 text-sm font-medium text-zinc-200 ring-1 ring-zinc-800/40 hover:bg-zinc-900/60">
+                        {{ icons.r('arrow-path', 'h-4 w-4 shrink-0 text-zinc-500') }}
+                        <span>Reset</span>
+                    </a>
                 </div>
             {% endif %}
         </form>
@@ -59,31 +77,43 @@
     {% if tableColumnPickerEnabled %}
         <div class="relative flex flex-wrap items-center justify-end gap-2" style="z-index:50">
             <button type="button" id="adm_col_picker_toggle" class="inline-flex items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-900/40 px-3 py-2 text-sm font-medium text-zinc-200 shadow-sm ring-1 ring-zinc-800/60 hover:bg-zinc-900/70 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/40" aria-expanded="false" aria-controls="adm_col_picker_panel" aria-haspopup="true">
-                Columns <span class="text-xs text-zinc-500" aria-hidden="true">▾</span>
+                {{ icons.r('columns', 'h-4 w-4 shrink-0 text-zinc-500') }}
+                <span>Columns</span>
+                {{ icons.r('chevron-down', 'h-4 w-4 shrink-0 text-zinc-500') }}
             </button>
-            <div id="adm_col_picker_panel" class="absolute right-0 mt-2 min-w-[14rem] rounded-xl border border-zinc-800 bg-zinc-950 p-3 shadow-xl ring-1 ring-zinc-800/80" style="z-index:51;top:100%" hidden role="region" aria-label="Column visibility">
-                <p class="mb-2 text-xs font-medium uppercase tracking-wide text-zinc-500">Visible columns</p>
+            <div id="adm_col_picker_panel" class="absolute right-0 mt-2 min-w-[14rem] rounded-xl border border-zinc-700/90 bg-zinc-950 p-3 shadow-xl ring-1 ring-zinc-800/80" style="z-index:51;top:100%" hidden role="region" aria-label="Column visibility">
+                <p class="mb-2 flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-zinc-500">
+                    {{ icons.r('columns', 'h-4 w-4 shrink-0 text-zinc-600') }}
+                    <span>Visible columns</span>
+                </p>
                 <div id="adm_col_picker_list" class="flex max-h-64 flex-col gap-2 overflow-y-auto text-sm"></div>
                 <p class="mt-3 text-xs text-zinc-600">Saved in this browser only.</p>
             </div>
         </div>
     {% endif %}
 
-    <div id="adm_resource_table" class="overflow-hidden rounded-xl border border-zinc-800/80 bg-zinc-900/10 shadow-sm ring-1 ring-zinc-800/60">
+    <div id="adm_resource_table" class="adm-resource-frame overflow-hidden rounded-xl border border-zinc-700/80 bg-zinc-900/10 shadow-sm ring-1 ring-zinc-800/70">
         {% if records is empty %}
-            <p class="px-4 py-14 text-center text-sm text-zinc-500">{{ tableEmptyMessage|default('No records found.') }}</p>
+            <p class="flex flex-col items-center justify-center gap-3 px-4 py-14 text-center text-sm text-zinc-500">
+                {{ icons.r('table', 'h-7 w-7 shrink-0 text-zinc-600 opacity-80') }}
+                <span>{{ tableEmptyMessage|default('No records found.') }}</span>
+            </p>
         {% else %}
             <div class="overflow-x-auto">
-                <table class="w-full border-collapse text-sm">
+                <table class="adm-table-grid w-full border-collapse text-sm">
                     <thead>
                     <tr>
                         {% for col in tableColumns %}
                             <th data-adm-col="{{ col.name }}" class="border-b border-zinc-800 bg-zinc-900/70 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-zinc-400">
                                 {% if col.sortUrl is defined %}
-                                    <a href="{{ col.sortUrl }}" class="inline-flex items-center gap-1 text-zinc-400 transition-colors hover:text-zinc-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/40 rounded">
+                                    <a href="{{ col.sortUrl }}" class="inline-flex items-center gap-1 rounded text-zinc-400 transition-colors hover:text-zinc-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/40">
                                         <span>{{ col.label }}</span>
                                         {% if col.sortActive|default(false) %}
-                                            <span class="font-normal text-zinc-500" aria-hidden="true">{{ col.sortDir == 'desc' ? '↓' : '↑' }}</span>
+                                            {% if col.sortDir == 'desc' %}
+                                                {{ icons.r('chevron-down', 'h-4 w-4 shrink-0 text-zinc-500') }}
+                                            {% else %}
+                                                {{ icons.r('chevron-up', 'h-4 w-4 shrink-0 text-zinc-500') }}
+                                            {% endif %}
                                         {% endif %}
                                     </a>
                                 {% else %}
@@ -110,11 +140,17 @@
                                 <td data-adm-col="__actions" class="whitespace-nowrap px-4 py-3 text-right">
                                     {% for act in tableRowActions[rowIndex] %}
                                         {% if act.kind == 'link' %}
-                                            <a class="mr-3 text-sm text-zinc-300 underline decoration-zinc-600 underline-offset-2 transition-colors hover:text-white" href="{{ route(act.route, act.routeParams) }}">{{ act.label }}</a>
+                                            <a class="mr-3 inline-flex items-center gap-1.5 text-sm text-zinc-300 underline decoration-zinc-600 underline-offset-2 transition-colors hover:text-white" href="{{ route(act.route, act.routeParams) }}">
+                                                {{ icons.r('pencil', 'h-4 w-4 shrink-0 text-zinc-500') }}
+                                                <span>{{ act.label }}</span>
+                                            </a>
                                         {% else %}
-                                            <form method="post" action="{{ route(act.route, act.routeParams) }}" class="inline" data-adm-confirm="Delete this record? This cannot be undone.">
+                                            <form method="post" action="{{ route(act.route, act.routeParams) }}" class="inline-flex items-center" data-adm-confirm="Delete this record? This cannot be undone.">
                                                 <input type="hidden" name="_csrf" value="{{ csrfToken }}">
-                                                <button type="submit" class="cursor-pointer border-0 bg-transparent p-0 text-sm text-red-400/95 underline decoration-red-500/50 underline-offset-2 hover:text-red-300">{{ act.label }}</button>
+                                                <button type="submit" class="inline-flex cursor-pointer items-center gap-1.5 border-0 bg-transparent p-0 text-sm text-red-400/95 underline decoration-red-500/50 underline-offset-2 hover:text-red-300">
+                                                    {{ icons.r('trash', 'h-4 w-4 shrink-0 text-red-400') }}
+                                                    <span>{{ act.label }}</span>
+                                                </button>
                                             </form>
                                         {% endif %}
                                     {% endfor %}
@@ -129,14 +165,20 @@
     </div>
 
     {% if pagination.hasPages %}
-        <nav class="flex flex-wrap items-center justify-between gap-4 border-t border-zinc-800/80 pt-5" aria-label="Pagination">
+        <nav class="flex flex-wrap items-center justify-between gap-4 rounded-lg border border-zinc-800/80 bg-zinc-900/20 px-4 py-4 ring-1 ring-zinc-800/60" aria-label="Pagination">
             <span class="text-sm text-zinc-500">Page {{ pagination.page }} of {{ pagination.last_page }} · {{ pagination.total }} total</span>
             <div class="flex flex-wrap items-center gap-2">
                 {% if not pagination.onFirstPage %}
-                    <a href="{{ pagination.urlForPage(pagination.page - 1) }}" class="inline-flex items-center rounded-lg border border-zinc-700 bg-zinc-900/30 px-3.5 py-2 text-sm font-medium text-zinc-200 hover:bg-zinc-900/60">Previous</a>
+                    <a href="{{ pagination.urlForPage(pagination.page - 1) }}" class="inline-flex items-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-900/30 px-3.5 py-2 text-sm font-medium text-zinc-200 ring-1 ring-zinc-800/50 hover:bg-zinc-900/60">
+                        {{ icons.r('chev-left', 'h-4 w-4 shrink-0 text-zinc-500') }}
+                        <span>Previous</span>
+                    </a>
                 {% endif %}
                 {% if not pagination.onLastPage %}
-                    <a href="{{ pagination.urlForPage(pagination.page + 1) }}" class="inline-flex items-center rounded-lg border border-zinc-700 bg-zinc-900/30 px-3.5 py-2 text-sm font-medium text-zinc-200 hover:bg-zinc-900/60">Next</a>
+                    <a href="{{ pagination.urlForPage(pagination.page + 1) }}" class="inline-flex items-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-900/30 px-3.5 py-2 text-sm font-medium text-zinc-200 ring-1 ring-zinc-800/50 hover:bg-zinc-900/60">
+                        <span>Next</span>
+                        {{ icons.r('chev-right', 'h-4 w-4 shrink-0 text-zinc-500') }}
+                    </a>
                 {% endif %}
             </div>
         </nav>

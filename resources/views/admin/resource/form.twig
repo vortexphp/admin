@@ -1,12 +1,16 @@
 {% extends 'admin/layout.twig' %}
+{% import 'admin/partials/icon_svg.twig' as icons %}
 
 {% block doc_title %}{{ title }} — Admin{% endblock %}
 
 {% block heading %}{{ title }}{% endblock %}
 
 {% block subheading %}
-    <p class="mt-1">
-        <a href="{{ route('admin.resource.index', { slug: slug }) }}" class="text-sm text-zinc-500 transition-colors hover:text-zinc-300">← Back to {{ slug }}</a>
+    <p class="mt-1.5">
+        <a href="{{ route('admin.resource.index', { slug: slug }) }}" class="inline-flex items-center gap-1.5 text-sm text-zinc-500 transition-colors hover:text-zinc-300">
+            {{ icons.r('chev-left', 'h-4 w-4 shrink-0 text-zinc-600') }}
+            <span>Back to {{ slug }}</span>
+        </a>
     </p>
 {% endblock %}
 
@@ -14,17 +18,23 @@
 <div class="mx-auto max-w-3xl">
     <form method="post"
           action="{% if record %}{{ route('admin.resource.update', { slug: slug, id: record.id }) }}{% else %}{{ route('admin.resource.store', { slug: slug }) }}{% endif %}"
-          class="mt-2 flex flex-col gap-4"
+          class="adm-form-card mt-2 flex flex-col gap-4 rounded-xl border border-zinc-700/80 bg-zinc-900/20 p-5 ring-1 ring-zinc-800/70 lg:p-6"
           {% if formMultipart|default(false) %}enctype="multipart/form-data"{% endif %}>
         <input type="hidden" name="_csrf" value="{{ csrfToken }}">
 
         {% for field in formFields %}
-            {% include 'admin/resource/fields/' ~ field.inputKind ~ '.twig' with { field: field, values: values } only %}
+            {% include 'admin/resource/fields/' ~ field.inputKind ~ '.twig' with { field: field, values: values, uploadPublicUrls: uploadPublicUrls|default({}) } only %}
         {% endfor %}
 
-        <div class="mt-6 flex flex-wrap gap-3">
-            <button type="submit" class="inline-flex items-center rounded-lg bg-zinc-100 px-3.5 py-2 text-sm font-medium text-zinc-950 shadow-sm hover:bg-white">Save</button>
-            <a href="{{ route('admin.resource.index', { slug: slug }) }}" class="inline-flex items-center rounded-lg border border-zinc-700 bg-transparent px-3.5 py-2 text-sm font-medium text-zinc-200 hover:bg-zinc-900/60">Cancel</a>
+        <div class="mt-6 flex flex-wrap gap-3 border-t border-zinc-800/80 pt-6">
+            <button type="submit" class="inline-flex items-center gap-2 rounded-lg border border-zinc-600/40 bg-zinc-100 px-3.5 py-2 text-sm font-medium text-zinc-950 shadow-sm ring-1 ring-zinc-800/30 hover:bg-white">
+                {{ icons.r('check', 'h-4 w-4 shrink-0 text-zinc-700') }}
+                <span>Save</span>
+            </button>
+            <a href="{{ route('admin.resource.index', { slug: slug }) }}" class="inline-flex items-center gap-2 rounded-lg border border-zinc-700 bg-transparent px-3.5 py-2 text-sm font-medium text-zinc-200 ring-1 ring-zinc-800/40 hover:bg-zinc-900/60">
+                {{ icons.r('chev-left', 'h-4 w-4 shrink-0 text-zinc-500') }}
+                <span>Cancel</span>
+            </a>
         </div>
     </form>
 </div>
