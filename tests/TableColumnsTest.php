@@ -7,6 +7,7 @@ namespace Vortex\Admin\Tests;
 use PHPUnit\Framework\TestCase;
 use Vortex\Admin\Tables\Columns\BadgeColumn;
 use Vortex\Admin\Tables\Columns\BelongsToColumn;
+use Vortex\Admin\Tables\Columns\BelongsToImageColumn;
 use Vortex\Admin\Tables\Columns\BooleanColumn;
 use Vortex\Admin\Tables\Columns\ColorColumn;
 use Vortex\Admin\Tables\Columns\DatetimeColumn;
@@ -161,6 +162,38 @@ final class TableColumnsTest extends TestCase
         self::assertSame('BG', $col->formatCellValue($col->resolveRowValue($post)));
         self::assertSame(['author.country'], $col->eagerRelationPaths());
     }
+
+    public function testBelongsToImageColumnUsesRelationAttribute(): void
+    {
+        $post = new BelongsToDemoPost();
+        $author = new BelongsToDemoUser();
+        $author->avatar = '/uploads/x.png';
+        $post->author = $author;
+        $col = BelongsToImageColumn::make('author', 'Photo')->size(32, 32);
+        self::assertSame('/uploads/x.png', $col->formatCellValue($col->resolveRowValue($post)));
+        self::assertSame(['author'], $col->eagerRelationPaths());
+        self::assertSame('author_avatar', $col->name);
+        $v = $col->toViewArray();
+        self::assertSame('image', $v['kind']);
+        self::assertSame(32, $v['maxHeightPx']);
+        self::assertSame(32, $v['maxWidthPx']);
+    }
+
+    public function testBelongsToImageColumnReturnsEmptyWhenRelationMissing(): void
+    {
+        $post = new BelongsToDemoPost();
+        $col = BelongsToImageColumn::make('author');
+        self::assertSame('', $col->formatCellValue($col->resolveRowValue($post)));
+    }
+
+    public function testTableCollectsEagerPathsIncludingBelongsToImage(): void
+    {
+        $t = Table::make(
+            BelongsToImageColumn::make('author'),
+            BelongsToColumn::make('category'),
+        );
+        self::assertEqualsCanonicalizing(['author', 'category'], $t->eagerRelationPaths());
+    }
 }
 
 final class BelongsToDemoPost extends Model
@@ -178,7 +211,7 @@ final class BelongsToDemoCategory extends Model
 final class BelongsToDemoUser extends Model
 {
     /** @var list<string> */
-    protected static array $fillable = ['name', 'country_id'];
+    protected static array $fillable = ['name', 'country_id', 'avatar'];
 }
 
 final class BelongsToDemoCountry extends Model
