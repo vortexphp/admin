@@ -16,9 +16,12 @@ final class AdminPackageTest extends TestCase
         self::assertFileExists($root . '/composer.json');
     }
 
-    public function testPublicAssetsMapsCss(): void
+    public function testPublicAssetsMapsCssAndJs(): void
     {
         $pkg = new AdminPackage();
-        self::assertSame(['resources/admin.css' => 'css/admin.css'], $pkg->publicAssets());
+        self::assertSame([
+            'resources/admin.css' => 'css/admin.css',
+            'resources/admin.tables.js' => 'js/admin.tables.js',
+        ], $pkg->publicAssets());
     }
 }

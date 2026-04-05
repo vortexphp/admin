@@ -43,6 +43,7 @@ final class AdminPackage extends Package
     {
         return [
             'resources/admin.css' => 'css/admin.css',
+            'resources/admin.tables.js' => 'js/admin.tables.js',
         ];
     }
 

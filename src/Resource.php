@@ -7,6 +7,7 @@ namespace Vortex\Admin;
 use Vortex\Admin\Forms\Form;
 use Vortex\Admin\Tables\Table;
 use Vortex\Database\Model;
+use Vortex\Database\QueryBuilder;
 
 /**
  * Filament-style resource: binds an Eloquent-like {@see Model} to admin CRUD routes.
@@ -79,6 +80,23 @@ abstract class Resource
     public static function indexQueryWith(): array
     {
         return [];
+    }
+
+    /**
+     * Adjust the index {@see QueryBuilder} after filters / eager loads and before sort + pagination (scopes, joins, extra constraints).
+     */
+    public static function modifyIndexQuery(QueryBuilder $query): void
+    {
+    }
+
+    /**
+     * Default ORDER BY when the request has no {@code sort} param. Key {@code column} is a single SQL identifier; {@code direction} is {@code asc} or {@code desc}.
+     *
+     * @return array{column: string, direction: string}|null
+     */
+    public static function defaultTableSort(): ?array
+    {
+        return null;
     }
 
     /**

@@ -45,6 +45,27 @@ final class TableColumnsTest extends TestCase
         self::assertSame('1234…', $c->formatCellValue('123456789'));
     }
 
+    public function testTextColumnSortableMetadata(): void
+    {
+        $plain = TextColumn::make('title');
+        self::assertFalse($plain->toViewArray()['sortable']);
+        $s = TextColumn::make('title')->sortable();
+        self::assertTrue($s->toViewArray()['sortable']);
+        self::assertSame('custom_col', $s->sortable('custom_col')->sortDatabaseColumn());
+    }
+
+    public function testColumnVisibilityFlags(): void
+    {
+        $plain = TextColumn::make('x');
+        self::assertTrue($plain->togglingEnabled());
+        self::assertFalse($plain->startsCollapsed());
+        $v = $plain->alwaysVisible();
+        self::assertFalse($v->togglingEnabled());
+        $c = TextColumn::make('y')->collapsedByDefault();
+        self::assertTrue($c->startsCollapsed());
+        self::assertTrue($c->toViewArray()['startsCollapsed']);
+    }
+
     public function testToggleColumnNormalizesBooleans(): void
     {
         $c = ToggleColumn::make('active')->labels('Locked', 'Open', 'N/A');

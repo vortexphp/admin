@@ -11,13 +11,40 @@ use Vortex\Database\Model;
  */
 abstract class TableColumn
 {
-    protected function __construct(
+    public function __construct(
         public readonly string $name,
         public readonly string $label,
+        private readonly ?string $sortDatabaseColumn = null,
+        private readonly bool $togglingEnabled = true,
+        private readonly bool $startsCollapsed = false,
     ) {
     }
 
     abstract public function displayKind(): string;
+
+    /**
+     * When non-null, the index can sort by this SQL column (allowlisted identifier) via {@code sort} / {@code sort_dir} query params.
+     */
+    public function sortDatabaseColumn(): ?string
+    {
+        return $this->sortDatabaseColumn;
+    }
+
+    /**
+     * When true, this column appears in the index “Columns” picker and can be shown or hidden (persisted in the browser).
+     */
+    public function togglingEnabled(): bool
+    {
+        return $this->togglingEnabled;
+    }
+
+    /**
+     * When true (and {@see togglingEnabled()}), the column is hidden until enabled in the picker when there is no saved preference yet.
+     */
+    public function startsCollapsed(): bool
+    {
+        return $this->startsCollapsed;
+    }
 
     /**
      * @return array<string, mixed>
@@ -28,6 +55,9 @@ abstract class TableColumn
             'kind' => $this->displayKind(),
             'name' => $this->name,
             'label' => $this->label,
+            'sortable' => $this->sortDatabaseColumn !== null,
+            'toggleable' => $this->togglingEnabled,
+            'startsCollapsed' => $this->startsCollapsed,
         ];
     }
 

@@ -7,7 +7,9 @@ namespace Vortex\Admin\Http;
 use Vortex\Admin\Forms\Form;
 use Vortex\Admin\Forms\FormField;
 use Vortex\Admin\Forms\UploadField;
+use Vortex\Admin\Resource;
 use Vortex\Admin\ResourceRegistry;
+use Vortex\Admin\SqlIdentifier;
 use Vortex\Admin\Tables\Table;
 use Vortex\Admin\Tables\TableColumn;
 use Vortex\Database\Model;
@@ -16,6 +18,7 @@ use Vortex\Http\Request;
 use Vortex\Http\Response;
 use Vortex\Http\Session;
 use Vortex\Support\UrlHelp;
+use JsonException;
 
 final class ResourceController extends AdminHttpController
 {
@@ -57,10 +60,22 @@ final class ResourceController extends AdminHttpController
             $query->with($withPaths);
         }
 
+        $class::modifyIndexQuery($query);
+
+        $sortState = self::resolveTableSort($class, $table, $queryString);
+        if ($sortState['apply'] !== null) {
+            [$orderCol, $orderDir] = $sortState['apply'];
+            $query->orderBy($orderCol, $orderDir);
+        }
+
         $paginator = $query->paginate($page, $perPage);
         $listQuery = $filterValues;
         if (count($perPageOptions) > 1) {
             $listQuery['per_page'] = (string) $perPage;
+        }
+        if ($sortState['persist'] && $sortState['uiKey'] !== null) {
+            $listQuery['sort'] = $sortState['uiKey'];
+            $listQuery['sort_dir'] = $sortState['dir'];
         }
         $listPath = UrlHelp::withQuery(
             route('admin.resource.index', ['slug' => $slug]),
@@ -87,13 +102,57 @@ final class ResourceController extends AdminHttpController
             $tableRowActions[] = $cells;
         }
 
+        $indexBaseUrl = route('admin.resource.index', ['slug' => $slug]);
+        $tableColumnsView = [];
+        foreach ($table->columns() as $col) {
+            $meta = $col->toViewArray();
+            $sortDb = $col->sortDatabaseColumn();
+            if ($sortDb !== null && SqlIdentifier::isSafe($sortDb)) {
+                $isActive = $sortState['uiKey'] === $col->name;
+                $nextDir = ($isActive && $sortState['dir'] === 'asc') ? 'desc' : 'asc';
+                $meta['sortUrl'] = UrlHelp::withQuery($indexBaseUrl, array_merge($listQuery, [
+                    'sort' => $col->name,
+                    'sort_dir' => $nextDir,
+                ]));
+                $meta['sortActive'] = $isActive;
+                $meta['sortDir'] = $isActive ? $sortState['dir'] : null;
+            }
+            $tableColumnsView[] = $meta;
+        }
+
+        $tableColumnPickerEnabled = $table->columnPickerUiEnabled();
+        if ($tableColumnPickerEnabled) {
+            $tableColumnPickerEnabled = false;
+            foreach ($table->columns() as $c) {
+                if ($c->togglingEnabled()) {
+                    $tableColumnPickerEnabled = true;
+                    break;
+                }
+            }
+        }
+
+        $tableColumnPickerMetaJson = '[]';
+        if ($tableColumnPickerEnabled) {
+            $pickerMeta = [];
+            foreach ($table->columns() as $c) {
+                $pickerMeta[] = [
+                    'name' => $c->name,
+                    'label' => $c->label,
+                    'toggleable' => $c->togglingEnabled(),
+                    'startsCollapsed' => $c->startsCollapsed(),
+                ];
+            }
+            try {
+                $tableColumnPickerMetaJson = json_encode($pickerMeta, JSON_THROW_ON_ERROR);
+            } catch (JsonException) {
+                $tableColumnPickerMetaJson = '[]';
+            }
+        }
+
         return $this->adminView('admin.resource.index', [
             'title' => $class::pluralLabel(),
             'slug' => $slug,
-            'tableColumns' => array_map(
-                static fn (TableColumn $c): array => $c->toViewArray(),
-                $table->columns(),
-            ),
+            'tableColumns' => $tableColumnsView,
             'tableFilters' => $table->filters(),
             'tableActions' => $table->actions(),
             'filterValues' => $filterValues,
@@ -102,8 +161,86 @@ final class ResourceController extends AdminHttpController
             'pagination' => $paginator,
             'records' => $records,
             'tableRowActions' => $tableRowActions,
+            'tableSort' => [
+                'key' => $sortState['uiKey'],
+                'dir' => $sortState['dir'],
+                'persist' => $sortState['persist'],
+            ],
+            'tableEmptyMessage' => $table->emptyMessage(),
+            'tableColumnPickerEnabled' => $tableColumnPickerEnabled,
+            'tableColumnPickerMetaJson' => $tableColumnPickerMetaJson,
             'csrfToken' => Csrf::token(),
         ]);
+    }
+
+    /**
+     * @param class-string<Resource> $resourceClass
+     * @param array<string, mixed> $queryString
+     * @return array{
+     *     apply: array{0: string, 1: string}|null,
+     *     uiKey: string|null,
+     *     dir: string,
+     *     persist: bool,
+     * }
+     */
+    private static function resolveTableSort(string $resourceClass, Table $table, array $queryString): array
+    {
+        $reqKey = isset($queryString['sort']) && is_string($queryString['sort']) ? $queryString['sort'] : '';
+        $reqDirRaw = isset($queryString['sort_dir']) && is_string($queryString['sort_dir'])
+            ? strtolower($queryString['sort_dir'])
+            : 'asc';
+        $reqDir = $reqDirRaw === 'desc' ? 'desc' : 'asc';
+
+        if ($reqKey !== '') {
+            foreach ($table->columns() as $col) {
+                if ($col->name !== $reqKey) {
+                    continue;
+                }
+                $db = $col->sortDatabaseColumn();
+                if ($db !== null && SqlIdentifier::isSafe($db)) {
+                    return [
+                        'apply' => [$db, $reqDir === 'desc' ? 'DESC' : 'ASC'],
+                        'uiKey' => $col->name,
+                        'dir' => $reqDir,
+                        'persist' => true,
+                    ];
+                }
+
+                break;
+            }
+        }
+
+        $default = $resourceClass::defaultTableSort();
+        if ($default !== null) {
+            $db = isset($default['column']) && is_string($default['column']) ? $default['column'] : '';
+            $dRaw = isset($default['direction']) && is_string($default['direction'])
+                ? strtolower($default['direction'])
+                : 'asc';
+            $d = $dRaw === 'desc' ? 'desc' : 'asc';
+            if ($db !== '' && SqlIdentifier::isSafe($db)) {
+                $uiKey = null;
+                foreach ($table->columns() as $col) {
+                    if ($col->sortDatabaseColumn() === $db) {
+                        $uiKey = $col->name;
+                        break;
+                    }
+                }
+
+                return [
+                    'apply' => [$db, $d === 'desc' ? 'DESC' : 'ASC'],
+                    'uiKey' => $uiKey,
+                    'dir' => $d,
+                    'persist' => false,
+                ];
+            }
+        }
+
+        return [
+            'apply' => null,
+            'uiKey' => null,
+            'dir' => 'asc',
+            'persist' => false,
+        ];
     }
 
     /**

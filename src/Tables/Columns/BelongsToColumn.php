@@ -19,8 +19,11 @@ final class BelongsToColumn extends TableColumn
         private readonly string $displayAttribute = 'name',
         private readonly int $maxDisplayLength = 80,
         private readonly ?string $foreignKeyFallback = null,
+        ?string $sortDatabaseColumn = null,
+        bool $togglingEnabled = true,
+        bool $startsCollapsed = false,
     ) {
-        parent::__construct($relationPath, $label);
+        parent::__construct($relationPath, $label, $sortDatabaseColumn, $togglingEnabled, $startsCollapsed);
     }
 
     /**
@@ -44,7 +47,24 @@ final class BelongsToColumn extends TableColumn
 
     public function label(string $label): self
     {
-        return new self($this->name, $label, $this->displayAttribute, $this->maxDisplayLength, $this->foreignKeyFallback);
+        return new self($this->name, $label, $this->displayAttribute, $this->maxDisplayLength, $this->foreignKeyFallback, $this->sortDatabaseColumn(), $this->togglingEnabled(), $this->startsCollapsed());
+    }
+
+    public function sortable(?string $databaseColumn = null): self
+    {
+        $fk = $databaseColumn ?? $this->foreignKeyFallback ?? self::defaultForeignKeyForPath($this->name);
+
+        return new self($this->name, $this->label, $this->displayAttribute, $this->maxDisplayLength, $this->foreignKeyFallback, $fk, $this->togglingEnabled(), $this->startsCollapsed());
+    }
+
+    public function alwaysVisible(): self
+    {
+        return new self($this->name, $this->label, $this->displayAttribute, $this->maxDisplayLength, $this->foreignKeyFallback, $this->sortDatabaseColumn(), false, false);
+    }
+
+    public function collapsedByDefault(): self
+    {
+        return new self($this->name, $this->label, $this->displayAttribute, $this->maxDisplayLength, $this->foreignKeyFallback, $this->sortDatabaseColumn(), true, true);
     }
 
     public function displayKind(): string

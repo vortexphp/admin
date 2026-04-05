@@ -17,8 +17,11 @@ final class ToggleColumn extends TableColumn
         private readonly string $trueLabel = 'On',
         private readonly string $falseLabel = 'Off',
         private readonly string $emptyLabel = '—',
+        ?string $sortDatabaseColumn = null,
+        bool $togglingEnabled = true,
+        bool $startsCollapsed = false,
     ) {
-        parent::__construct($name, $label);
+        parent::__construct($name, $label, $sortDatabaseColumn, $togglingEnabled, $startsCollapsed);
     }
 
     public static function make(string $name, ?string $label = null): self
@@ -28,12 +31,29 @@ final class ToggleColumn extends TableColumn
 
     public function label(string $label): self
     {
-        return new self($this->name, $label, $this->trueLabel, $this->falseLabel, $this->emptyLabel);
+        return new self($this->name, $label, $this->trueLabel, $this->falseLabel, $this->emptyLabel, $this->sortDatabaseColumn(), $this->togglingEnabled(), $this->startsCollapsed());
     }
 
     public function labels(string $true, string $false, string $empty = '—'): self
     {
-        return new self($this->name, $this->label, $true, $false, $empty);
+        return new self($this->name, $this->label, $true, $false, $empty, $this->sortDatabaseColumn(), $this->togglingEnabled(), $this->startsCollapsed());
+    }
+
+    public function sortable(?string $databaseColumn = null): self
+    {
+        $col = $databaseColumn ?? $this->name;
+
+        return new self($this->name, $this->label, $this->trueLabel, $this->falseLabel, $this->emptyLabel, $col, $this->togglingEnabled(), $this->startsCollapsed());
+    }
+
+    public function alwaysVisible(): self
+    {
+        return new self($this->name, $this->label, $this->trueLabel, $this->falseLabel, $this->emptyLabel, $this->sortDatabaseColumn(), false, false);
+    }
+
+    public function collapsedByDefault(): self
+    {
+        return new self($this->name, $this->label, $this->trueLabel, $this->falseLabel, $this->emptyLabel, $this->sortDatabaseColumn(), true, true);
     }
 
     public function displayKind(): string

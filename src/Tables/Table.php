@@ -18,6 +18,8 @@ final class Table
         private readonly array $columns,
         private readonly array $filters = [],
         private readonly array $actions = [],
+        private readonly ?string $emptyMessage = null,
+        private readonly bool $columnPickerUiEnabled = true,
     ) {
     }
 
@@ -27,6 +29,8 @@ final class Table
             array_values($columns),
             [],
             [EditAction::make(), DeleteAction::make()],
+            null,
+            true,
         );
     }
 
@@ -35,7 +39,7 @@ final class Table
      */
     public function withFilters(TableFilter ...$filters): self
     {
-        return new self($this->columns, array_values($filters), $this->actions);
+        return new self($this->columns, array_values($filters), $this->actions, $this->emptyMessage, $this->columnPickerUiEnabled);
     }
 
     /**
@@ -45,7 +49,50 @@ final class Table
      */
     public function withActions(TableRowAction ...$actions): self
     {
-        return new self($this->columns, $this->filters, array_values($actions));
+        return new self($this->columns, $this->filters, array_values($actions), $this->emptyMessage, $this->columnPickerUiEnabled);
+    }
+
+    /**
+     * Add a search field that OR-matches {@code LIKE} across the given columns ({@see GlobalSearchFilter}).
+     *
+     * @param list<string> $columns Allowlisted attribute names on the resource model’s table.
+     * @return static
+     */
+    public function withGlobalSearch(array $columns, ?string $label = null, string $paramName = 'search'): self
+    {
+        $filter = GlobalSearchFilter::make($paramName, $label ?? 'Search', $columns);
+
+        return new self($this->columns, [...$this->filters, $filter], $this->actions, $this->emptyMessage, $this->columnPickerUiEnabled);
+    }
+
+    /**
+     * Copy shown above the table when there are zero rows.
+     *
+     * @return static
+     */
+    public function withEmptyMessage(string $message): self
+    {
+        return new self($this->columns, $this->filters, $this->actions, $message, $this->columnPickerUiEnabled);
+    }
+
+    /**
+     * Disable the index “Columns” visibility UI entirely.
+     *
+     * @return static
+     */
+    public function withoutColumnPicker(): self
+    {
+        return new self($this->columns, $this->filters, $this->actions, $this->emptyMessage, false);
+    }
+
+    public function emptyMessage(): ?string
+    {
+        return $this->emptyMessage;
+    }
+
+    public function columnPickerUiEnabled(): bool
+    {
+        return $this->columnPickerUiEnabled;
     }
 
     /**

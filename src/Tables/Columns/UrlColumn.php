@@ -13,8 +13,11 @@ final class UrlColumn extends TableColumn
         string $label,
         private readonly int $maxDisplayLength = 40,
         private readonly bool $external = true,
+        ?string $sortDatabaseColumn = null,
+        bool $togglingEnabled = true,
+        bool $startsCollapsed = false,
     ) {
-        parent::__construct($name, $label);
+        parent::__construct($name, $label, $sortDatabaseColumn, $togglingEnabled, $startsCollapsed);
     }
 
     public static function make(string $name, ?string $label = null): self
@@ -24,7 +27,24 @@ final class UrlColumn extends TableColumn
 
     public function label(string $label): self
     {
-        return new self($this->name, $label, $this->maxDisplayLength, $this->external);
+        return new self($this->name, $label, $this->maxDisplayLength, $this->external, $this->sortDatabaseColumn(), $this->togglingEnabled(), $this->startsCollapsed());
+    }
+
+    public function sortable(?string $databaseColumn = null): self
+    {
+        $col = $databaseColumn ?? $this->name;
+
+        return new self($this->name, $this->label, $this->maxDisplayLength, $this->external, $col, $this->togglingEnabled(), $this->startsCollapsed());
+    }
+
+    public function alwaysVisible(): self
+    {
+        return new self($this->name, $this->label, $this->maxDisplayLength, $this->external, $this->sortDatabaseColumn(), false, false);
+    }
+
+    public function collapsedByDefault(): self
+    {
+        return new self($this->name, $this->label, $this->maxDisplayLength, $this->external, $this->sortDatabaseColumn(), true, true);
     }
 
     public function displayKind(): string
