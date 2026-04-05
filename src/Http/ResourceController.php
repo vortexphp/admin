@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Vortex\Admin\Http;
 
 use Vortex\Admin\ResourceRegistry;
+use Vortex\Admin\Tables\Table;
 use Vortex\Database\Model;
 use Vortex\Http\Controller;
 use Vortex\Http\Csrf;
@@ -24,17 +25,17 @@ final class ResourceController extends Controller
         $modelClass = $class::model();
         /** @var list<Model> $rows */
         $rows = $modelClass::all();
-        $columns = $class::tableColumns();
+        $table = $class::table();
 
         $records = [];
         foreach ($rows as $row) {
-            $records[] = $this->rowPayload($row, $columns);
+            $records[] = $this->rowPayload($row, $table);
         }
 
         return View::html('admin.resource.index', [
             'title' => $class::pluralLabel(),
             'slug' => $slug,
-            'columns' => $columns,
+            'tableColumns' => $table->columns(),
             'records' => $records,
             'csrfToken' => Csrf::token(),
         ]);
@@ -147,18 +148,20 @@ final class ResourceController extends Controller
     }
 
     /**
-     * @param list<string> $columns
      * @return array<string, mixed>
      */
-    private function rowPayload(Model $row, array $columns): array
+    private function rowPayload(Model $row, Table $table): array
     {
         $out = [];
-        foreach ($columns as $col) {
+        foreach ($table->columnNames() as $col) {
             $v = $row->{$col} ?? null;
             if (is_string($v) && strlen($v) > 80) {
                 $v = substr($v, 0, 77) . '…';
             }
             $out[$col] = $v;
+        }
+        if (! array_key_exists('id', $out) && isset($row->id)) {
+            $out['id'] = $row->id;
         }
 
         return $out;

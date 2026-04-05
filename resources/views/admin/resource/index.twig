@@ -26,8 +26,8 @@
         <table class="vortex-admin__table">
             <thead>
             <tr>
-                {% for col in columns %}
-                    <th>{{ col }}</th>
+                {% for col in tableColumns %}
+                    <th>{{ attribute(col, 'label') }}</th>
                 {% endfor %}
                 <th></th>
             </tr>
@@ -35,8 +35,8 @@
             <tbody>
             {% for row in records %}
                 <tr>
-                    {% for col in columns %}
-                        <td>{{ row[col] }}</td>
+                    {% for col in tableColumns %}
+                        <td>{{ attribute(row, attribute(col, 'name')) }}</td>
                     {% endfor %}
                     <td class="vortex-admin__actions">
                         {% if row.id is defined %}

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Vortex\Admin;
 
 use ReflectionClass;
+use Vortex\Admin\Tables\Table;
 use Vortex\Database\Model;
 
 /**
@@ -41,20 +42,9 @@ abstract class Resource
     }
 
     /**
-     * Table columns on the index page (attribute names). Defaults: {@code id} + fillable (minus {@see excludedFromTable()}), capped.
-     *
-     * @return list<string>
+     * Index table: use {@see Table} and {@see \Vortex\Admin\Tables\TableColumn} to register columns and labels.
      */
-    public static function tableColumns(): array
-    {
-        $fillable = static::resolvedFillable();
-        $fillable = array_values(array_diff($fillable, static::excludedFromTable()));
-        if ($fillable === []) {
-            return ['id'];
-        }
-
-        return array_values(array_unique(array_merge(['id'], array_slice($fillable, 0, 12))));
-    }
+    abstract public static function table(): Table;
 
     /**
      * Form fields for create / edit. Defaults: model {@code $fillable} minus {@see excludedFromForm()}.
@@ -66,16 +56,6 @@ abstract class Resource
         $fillable = static::resolvedFillable();
 
         return array_values(array_diff($fillable, static::excludedFromForm()));
-    }
-
-    /**
-     * Hidden / dangerous columns on the index table.
-     *
-     * @return list<string>
-     */
-    public static function excludedFromTable(): array
-    {
-        return ['password', 'remember_token', 'api_token'];
     }
 
     /**

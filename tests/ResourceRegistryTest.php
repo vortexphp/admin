@@ -7,6 +7,8 @@ namespace Vortex\Admin\Tests;
 use PHPUnit\Framework\TestCase;
 use Vortex\Admin\Resource;
 use Vortex\Admin\ResourceRegistry;
+use Vortex\Admin\Tables\Table;
+use Vortex\Admin\Tables\TableColumn;
 use Vortex\Config\Repository;
 use Vortex\Database\Model;
 
@@ -49,5 +51,13 @@ final class StubNoteResource extends Resource
     public static function slug(): string
     {
         return 'stub-notes';
+    }
+
+    public static function table(): Table
+    {
+        return Table::make(
+            TableColumn::make('id'),
+            TableColumn::make('title'),
+        );
     }
 }

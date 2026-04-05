@@ -57,6 +57,8 @@ namespace App\Admin\Resources;
 
 use App\Models\Post;
 use Vortex\Admin\Resource;
+use Vortex\Admin\Tables\Table;
+use Vortex\Admin\Tables\TableColumn;
 
 final class PostResource extends Resource
 {
@@ -70,8 +72,16 @@ final class PostResource extends Resource
         return 'posts'; // /admin/posts
     }
 
-    // Optional: override label(), pluralLabel(), tableColumns(), formAttributes(),
-    // excludedFromTable(), excludedFromForm()
+    public static function table(): Table
+    {
+        return Table::make(
+            TableColumn::make('id'),
+            TableColumn::make('title'),
+            TableColumn::make('created_at', 'Created'),
+        );
+    }
+
+    // Optional: label(), pluralLabel(), formAttributes(), excludedFromForm()
 }
 ```
 
@@ -91,9 +101,13 @@ final class PostResource extends Resource
 
 Forms include **`_csrf`**; invalid CSRF redirects back without flash error (harden further as needed).
 
+**Table API**
+
+- **`Vortex\Admin\Tables\Table::make(TableColumn::make('attr', 'Optional label'), ...)`** — defines column order; omit the second argument for an auto label from the attribute name (`created_at` → `Created At`).
+- **`TableColumn::make('name')->label('Override')`** — fluent label override.
+
 **Defaults**
 
-- **Index columns:** `id` + fillable attributes (minus **`excludedFromTable()`**), capped.
 - **Form fields:** fillable minus **`excludedFromForm()`** (drops **`password`**, **`remember_token`**, **`api_token`** by default).
 - Long text: fields named like **`body`**, **`content`**, **`description`**, … render as `<textarea>` in the generic form template.
 
