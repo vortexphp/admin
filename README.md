@@ -6,6 +6,7 @@ Admin UI foundation for [Vortex](https://github.com/vortexphp/framework) apps: s
 
 - PHP 8.2+
 - **vortexphp/framework** ^0.12 (application `Package` support, `publish:assets`, Twig loader paths)
+- **Tailwind** (optional for consumers): the published **`resources/admin.css`** is pre-built. To change admin styles, use **Node 18+**, run **`npm install`** and **`npm run build`** in this package (see **`package.json`**).
 
 ## Install
 
@@ -28,7 +29,33 @@ Publish static assets:
 php vortex publish:assets
 ```
 
-This copies **`resources/admin.css`** → **`public/css/admin.css`** (see **`AdminPackage::publicAssets()`**).
+This copies **`resources/admin.css`** → **`public/css/admin.css`** (see **`AdminPackage::publicAssets()`**). That file is generated from **`resources/admin.src.css`** via Tailwind (**`npm run build`** in **`vortexphp/admin`**).
+
+## Navigation (header links)
+
+**`Vortex\Admin\Navigation`** is registered as a container singleton. In your app **`Package::boot()`** (after admin routes exist), register entries:
+
+```php
+$nav = $container->make(\Vortex\Admin\Navigation::class);
+
+$nav->link('Posts', route('admin.resource.index', ['slug' => 'posts']), icon: '📝');
+$nav->link('Site', '/', iconClass: 'size-4 opacity-80'); // decorative span classes (icon font / SVG mask / etc.)
+
+$nav->group('Content', function (\Vortex\Admin\NavGroup $g): void {
+    $g->link('Notes', route('admin.resource.index', ['slug' => 'notes']));
+    $g->add(\Vortex\Admin\NavLink::route('Dashboard', 'admin.dashboard'));
+});
+
+$nav->add(\Vortex\Admin\NavGroup::make('System', function (\Vortex\Admin\NavGroup $g): void {
+    $g->link('Settings', '/admin/settings');
+}));
+```
+
+- **`icon`** — optional short text or emoji (escaped in Twig).
+- **`iconClass`** — optional classes on an empty `<span>` for your own icon setup (include size utilities here).
+- **`Navigation::group()`** / **`NavGroup`** — labeled sections in the header; groups contain **`NavLink`** rows only.
+
+Arbitrary URLs use **`NavLink`** or **`$nav->link('Label', 'https://…')`**. Everything renders beside **Admin** on the dashboard, resource index, and resource forms.
 
 ## Resources (Filament-style CRUD)
 

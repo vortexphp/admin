@@ -6,6 +6,7 @@ namespace Vortex\Admin;
 
 use Vortex\Admin\Http\DashboardController;
 use Vortex\Admin\Http\ResourceController;
+use Vortex\Admin\Navigation;
 use Vortex\Container;
 use Vortex\Package\Package;
 use Vortex\Package\PackageRegistry;
@@ -14,6 +15,11 @@ use Vortex\View\Factory;
 
 final class AdminPackage extends Package
 {
+    public function register(Container $container, string $basePath): void
+    {
+        $container->singleton(Navigation::class, static fn (): Navigation => Navigation::make());
+    }
+
     public function publicAssets(): array
     {
         return [

@@ -1,0 +1,10 @@
+{
+  "private": true,
+  "scripts": {
+    "build": "tailwindcss -i ./resources/admin.src.css -o ./resources/admin.css --minify",
+    "watch": "tailwindcss -i ./resources/admin.src.css -o ./resources/admin.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.17"
+  }
+}

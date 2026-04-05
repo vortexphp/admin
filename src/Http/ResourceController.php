@@ -7,15 +7,13 @@ namespace Vortex\Admin\Http;
 use Vortex\Admin\ResourceRegistry;
 use Vortex\Admin\Tables\Table;
 use Vortex\Database\Model;
-use Vortex\Http\Controller;
 use Vortex\Http\Csrf;
 use Vortex\Http\Request;
 use Vortex\Http\Response;
 use Vortex\Http\Session;
 use Vortex\Support\UrlHelp;
-use Vortex\View\View;
 
-final class ResourceController extends Controller
+final class ResourceController extends AdminHttpController
 {
     public function index(string $slug): Response
     {
@@ -80,7 +78,7 @@ final class ResourceController extends Controller
             $tableRowActions[] = $cells;
         }
 
-        return View::html('admin.resource.index', [
+        return $this->adminView('admin.resource.index', [
             'title' => $class::pluralLabel(),
             'slug' => $slug,
             'tableColumns' => $table->columns(),
@@ -142,7 +140,7 @@ final class ResourceController extends Controller
             return Response::make('Not found', 404);
         }
 
-        return View::html('admin.resource.form', [
+        return $this->adminView('admin.resource.form', [
             'title' => 'Create ' . $class::label(),
             'slug' => $slug,
             'formFields' => $class::form()->fields(),
@@ -188,7 +186,7 @@ final class ResourceController extends Controller
             $values[$f] = $record->{$f} ?? '';
         }
 
-        return View::html('admin.resource.form', [
+        return $this->adminView('admin.resource.form', [
             'title' => 'Edit ' . $class::label(),
             'slug' => $slug,
             'formFields' => $form->fields(),

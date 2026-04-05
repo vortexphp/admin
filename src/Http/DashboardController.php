@@ -5,11 +5,9 @@ declare(strict_types=1);
 namespace Vortex\Admin\Http;
 
 use Vortex\Admin\ResourceRegistry;
-use Vortex\Http\Controller;
 use Vortex\Http\Response;
-use Vortex\View\View;
 
-final class DashboardController extends Controller
+final class DashboardController extends AdminHttpController
 {
     public function index(): Response
     {
@@ -21,7 +19,7 @@ final class DashboardController extends Controller
             ];
         }
 
-        return View::html('admin.dashboard', [
+        return $this->adminView('admin.dashboard', [
             'title' => 'Admin',
             'resources' => $items,
         ]);

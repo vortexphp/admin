@@ -1,28 +1,26 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ title }}</title>
-    <link rel="stylesheet" href="/css/admin.css">
-</head>
-<body class="vortex-admin">
-<header class="vortex-admin__bar">
-    <span class="vortex-admin__brand">{{ title }}</span>
-</header>
-<main class="vortex-admin__main">
-    <h1 class="vortex-admin__title">{{ title }}</h1>
-    <p class="vortex-admin__lead">Register resource classes in <code class="vortex-admin__code">config/admin.php</code> (<code class="vortex-admin__code">resources</code> key).</p>
+{% extends 'admin/layout.twig' %}
+
+{% block doc_title %}{{ title }} — Admin{% endblock %}
+
+{% block heading %}{{ title }}{% endblock %}
+
+{% block body %}
+<div class="mx-auto max-w-3xl">
+    <p class="text-sm leading-relaxed text-zinc-400">Register resource classes in <code class="rounded-md bg-zinc-900 px-1.5 py-0.5 font-mono text-xs text-zinc-300 ring-1 ring-zinc-800">config/admin.php</code> (<code class="rounded-md bg-zinc-900 px-1.5 py-0.5 font-mono text-xs text-zinc-300 ring-1 ring-zinc-800">resources</code> key).</p>
 
     {% if resources is not empty %}
-        <ul class="vortex-admin__linklist">
+        <ul class="mt-8 divide-y divide-zinc-800/80 rounded-xl border border-zinc-800/80 bg-zinc-900/20">
             {% for r in resources %}
-                <li><a href="{{ route('admin.resource.index', { slug: r.slug }) }}">{{ r.label }}</a></li>
+                <li>
+                    <a class="flex items-center justify-between gap-3 px-4 py-3.5 text-sm text-zinc-200 transition-colors hover:bg-zinc-900/40" href="{{ route('admin.resource.index', { slug: r.slug }) }}">
+                        <span class="font-medium">{{ r.label }}</span>
+                        <span class="text-xs text-zinc-500">{{ r.slug }}</span>
+                    </a>
+                </li>
             {% endfor %}
         </ul>
     {% else %}
-        <p class="vortex-admin__muted">No resources configured.</p>
+        <p class="mt-8 text-sm text-zinc-500">No resources configured.</p>
     {% endif %}
-</main>
-</body>
-</html>
+</div>
+{% endblock %}

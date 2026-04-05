@@ -1,0 +1,19 @@
+<div class="space-y-6">
+    {% for entry in adminNavigation %}
+        {% if entry.kind == 'group' %}
+            <div>
+                <p class="mb-1.5 px-3 text-[0.65rem] font-semibold uppercase tracking-wider text-zinc-500">{{ entry.label }}</p>
+                <div class="space-y-0.5">
+                    {% for item in entry.items %}
+                        {% include 'admin/partials/nav_link.twig' %}
+                    {% endfor %}
+                </div>
+            </div>
+        {% else %}
+            {% set item = entry %}
+            <div class="space-y-0.5">
+                {% include 'admin/partials/nav_link.twig' %}
+            </div>
+        {% endif %}
+    {% endfor %}
+</div>
