@@ -10,6 +10,7 @@ use Vortex\Admin\Tables\Columns\BelongsToColumn;
 use Vortex\Admin\Tables\Columns\BooleanColumn;
 use Vortex\Admin\Tables\Columns\ColorColumn;
 use Vortex\Admin\Tables\Columns\DatetimeColumn;
+use Vortex\Admin\Tables\Columns\ImageColumn;
 use Vortex\Admin\Tables\Columns\NumericColumn;
 use Vortex\Admin\Tables\Columns\TextColumn;
 use Vortex\Admin\Tables\Columns\ToggleColumn;
@@ -76,6 +77,21 @@ final class TableColumnsTest extends TestCase
         $v = $c->toViewArray();
         self::assertSame('toggle', $v['kind']);
         self::assertSame('Locked', $v['trueLabel']);
+    }
+
+    public function testImageColumnPassesSafeUrlAndStripsDangerous(): void
+    {
+        $c = ImageColumn::make('thumb', 'Thumbnail')->size(64, 96)->openOriginalInNewTab();
+        self::assertSame('https://cdn.example/x.png', $c->formatCellValue('https://cdn.example/x.png'));
+        self::assertSame('/uploads/a.jpg', $c->formatCellValue('/uploads/a.jpg'));
+        self::assertSame('', $c->formatCellValue(null));
+        self::assertSame('', $c->formatCellValue('javascript:alert(1)'));
+        self::assertSame('', $c->formatCellValue('data:text/html,base64'));
+        $v = $c->toViewArray();
+        self::assertSame('image', $v['kind']);
+        self::assertSame(64, $v['maxHeightPx']);
+        self::assertSame(96, $v['maxWidthPx']);
+        self::assertTrue($v['openOriginalInNewTab']);
     }
 
     public function testColorColumnNormalizesHex(): void

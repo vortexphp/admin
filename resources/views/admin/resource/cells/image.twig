@@ -1,0 +1,14 @@
+{% if cell %}
+    {% set mh = col.maxHeightPx|default(48) %}
+    {% set mw = col.maxWidthPx|default(null) %}
+    {% set style = 'max-height:' ~ mh ~ 'px' ~ (mw is not null ? ';max-width:' ~ mw ~ 'px' : '') %}
+    {% if col.openOriginalInNewTab|default(false) %}
+        <a href="{{ cell|e('html_attr') }}" target="_blank" rel="noopener noreferrer" class="inline-block rounded-md ring-1 ring-zinc-700/80 transition-opacity hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/50">
+            <img src="{{ cell|e('html_attr') }}" alt="" loading="lazy" decoding="async" class="h-auto w-auto max-w-none object-contain align-middle rounded-md" style="{{ style|e('html_attr') }}">
+        </a>
+    {% else %}
+        <img src="{{ cell|e('html_attr') }}" alt="" loading="lazy" decoding="async" class="inline-block rounded-md object-contain align-middle ring-1 ring-zinc-700/80" style="{{ style|e('html_attr') }}">
+    {% endif %}
+{% else %}
+    <span class="text-zinc-500">{{ col.emptyLabel|default('—') }}</span>
+{% endif %}
