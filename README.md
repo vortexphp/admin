@@ -56,6 +56,9 @@ declare(strict_types=1);
 namespace App\Admin\Resources;
 
 use App\Models\Post;
+use Vortex\Admin\Forms\Form;
+use Vortex\Admin\Forms\TextareaField;
+use Vortex\Admin\Forms\TextField;
 use Vortex\Admin\Resource;
 use Vortex\Admin\Tables\Table;
 use Vortex\Admin\Tables\TableColumn;
@@ -81,11 +84,19 @@ final class PostResource extends Resource
         );
     }
 
-    // Optional: label(), pluralLabel(), formAttributes(), excludedFromForm()
+    public static function form(): Form
+    {
+        return Form::make(
+            TextField::make('title'),
+            TextareaField::make('body'),
+        );
+    }
+
+    // Optional: label(), pluralLabel()
 }
 ```
 
-3. Your **`Model`** must use **`$fillable`** (or an empty fillable means “all attributes” for mass assignment — use explicit lists in production).
+3. Your **`Model`** should list assignable attributes in **`$fillable`** to match what you persist from **`form()`** (and avoid mass-assignment surprises).
 
 **Routes** (registered by **`AdminPackage`**):
 
@@ -103,13 +114,13 @@ Forms include **`_csrf`**; invalid CSRF redirects back without flash error (hard
 
 **Table API**
 
-- **`Vortex\Admin\Tables\Table::make(TableColumn::make('attr', 'Optional label'), ...)`** — defines column order; omit the second argument for an auto label from the attribute name (`created_at` → `Created At`).
+- **`Table::make(TableColumn::make('attr', 'Optional label'), ...)`** — column order; omit the second argument for an auto label from the attribute name (`created_at` → `Created At`).
 - **`TableColumn::make('name')->label('Override')`** — fluent label override.
 
-**Defaults**
+**Form API** (same idea as the table)
 
-- **Form fields:** fillable minus **`excludedFromForm()`** (drops **`password`**, **`remember_token`**, **`api_token`** by default).
-- Long text: fields named like **`body`**, **`content`**, **`description`**, … render as `<textarea>` in the generic form template.
+- **`Form::make(TextField::make('attr', 'Optional label'), TextareaField::make('body'), ...)`** — field order; each field is its own class.
+- **`TextField`**, **`TextareaField`** — extend **`FormField`**; use **`->label('Override')`** like **`TableColumn`**.
 
 ## What it registers
 

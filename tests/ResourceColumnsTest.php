@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace Vortex\Admin\Tests;
 
 use PHPUnit\Framework\TestCase;
+use Vortex\Admin\Forms\Form;
+use Vortex\Admin\Forms\TextareaField;
+use Vortex\Admin\Forms\TextField;
 use Vortex\Admin\Resource;
 use Vortex\Admin\Tables\Table;
 use Vortex\Admin\Tables\TableColumn;
@@ -17,14 +20,16 @@ final class ResourceColumnsTest extends TestCase
         $table = DemoResource::table();
         self::assertSame(['id', 'title'], $table->columnNames());
         self::assertSame('Title', $table->columns()[1]->label);
-        self::assertSame(['title', 'body'], DemoResource::formAttributes());
+        $form = DemoResource::form();
+        self::assertSame(['title', 'body'], $form->fieldNames());
+        self::assertInstanceOf(TextareaField::class, $form->fields()[1]);
     }
 
     public function testExcludesSensitiveFromForm(): void
     {
         $table = UserLikeResource::table();
         self::assertSame(['id', 'name'], $table->columnNames());
-        self::assertSame(['name'], UserLikeResource::formAttributes());
+        self::assertSame(['name'], UserLikeResource::form()->fieldNames());
     }
 }
 
@@ -53,6 +58,14 @@ final class DemoResource extends Resource
             TableColumn::make('title', 'Title'),
         );
     }
+
+    public static function form(): Form
+    {
+        return Form::make(
+            TextField::make('title'),
+            TextareaField::make('body'),
+        );
+    }
 }
 
 final class UserLikeModel extends Model
@@ -79,5 +92,10 @@ final class UserLikeResource extends Resource
             TableColumn::make('id'),
             TableColumn::make('name', 'Name'),
         );
+    }
+
+    public static function form(): Form
+    {
+        return Form::make(TextField::make('name'));
     }
 }

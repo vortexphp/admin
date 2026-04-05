@@ -51,7 +51,7 @@ final class ResourceController extends Controller
         return View::html('admin.resource.form', [
             'title' => 'Create ' . $class::label(),
             'slug' => $slug,
-            'fields' => $class::formAttributes(),
+            'formFields' => $class::form()->fields(),
             'values' => [],
             'record' => null,
             'csrfToken' => Csrf::token(),
@@ -69,7 +69,7 @@ final class ResourceController extends Controller
         }
 
         $modelClass = $class::model();
-        $payload = $this->formPayload($class::formAttributes());
+        $payload = $this->formPayload($class::form()->fieldNames());
         $modelClass::create($payload);
         Session::flash('admin_success', 'Created.');
 
@@ -88,16 +88,16 @@ final class ResourceController extends Controller
             return Response::make('Not found', 404);
         }
 
-        $fields = $class::formAttributes();
+        $form = $class::form();
         $values = [];
-        foreach ($fields as $f) {
+        foreach ($form->fieldNames() as $f) {
             $values[$f] = $record->{$f} ?? '';
         }
 
         return View::html('admin.resource.form', [
             'title' => 'Edit ' . $class::label(),
             'slug' => $slug,
-            'fields' => $fields,
+            'formFields' => $form->fields(),
             'values' => $values,
             'record' => $record,
             'csrfToken' => Csrf::token(),
@@ -120,7 +120,7 @@ final class ResourceController extends Controller
             return Response::make('Not found', 404);
         }
 
-        $payload = $this->formPayload($class::formAttributes());
+        $payload = $this->formPayload($class::form()->fieldNames());
         $record->update($payload);
         Session::flash('admin_success', 'Saved.');
 

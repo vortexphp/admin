@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Vortex\Admin\Tests;
 
 use PHPUnit\Framework\TestCase;
+use Vortex\Admin\Forms\Form;
+use Vortex\Admin\Forms\TextField;
 use Vortex\Admin\Resource;
 use Vortex\Admin\ResourceRegistry;
 use Vortex\Admin\Tables\Table;
@@ -59,5 +61,10 @@ final class StubNoteResource extends Resource
             TableColumn::make('id'),
             TableColumn::make('title'),
         );
+    }
+
+    public static function form(): Form
+    {
+        return Form::make(TextField::make('title'));
     }
 }

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Vortex\Admin;
 
-use ReflectionClass;
+use Vortex\Admin\Forms\Form;
 use Vortex\Admin\Tables\Table;
 use Vortex\Database\Model;
 
@@ -47,39 +47,7 @@ abstract class Resource
     abstract public static function table(): Table;
 
     /**
-     * Form fields for create / edit. Defaults: model {@code $fillable} minus {@see excludedFromForm()}.
-     *
-     * @return list<string>
+     * Create / edit form: use {@see Form} and concrete fields ({@see \Vortex\Admin\Forms\TextField}, {@see \Vortex\Admin\Forms\TextareaField}, …).
      */
-    public static function formAttributes(): array
-    {
-        $fillable = static::resolvedFillable();
-
-        return array_values(array_diff($fillable, static::excludedFromForm()));
-    }
-
-    /**
-     * Hidden fields on forms (use policies or custom resources for passwords).
-     *
-     * @return list<string>
-     */
-    public static function excludedFromForm(): array
-    {
-        return ['password', 'password_confirmation', 'remember_token', 'api_token'];
-    }
-
-    /**
-     * @return list<string>
-     */
-    protected static function resolvedFillable(): array
-    {
-        $modelClass = static::model();
-        $ref = new ReflectionClass($modelClass);
-        $p = $ref->getProperty('fillable');
-        $p->setAccessible(true);
-        /** @var list<string>|array<int, string> $raw */
-        $raw = $p->getValue(null) ?? [];
-
-        return array_values(array_filter($raw, static fn ($k): bool => is_string($k) && $k !== ''));
-    }
+    abstract public static function form(): Form;
 }
