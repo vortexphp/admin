@@ -144,7 +144,7 @@ final class ResourceController extends AdminHttpController
             'title' => 'Create ' . $class::label(),
             'slug' => $slug,
             'formFields' => $class::form()->fields(),
-            'values' => [],
+            'values' => $class::formValues(null),
             'record' => null,
             'csrfToken' => Csrf::token(),
         ]);
@@ -181,16 +181,12 @@ final class ResourceController extends AdminHttpController
         }
 
         $form = $class::form();
-        $values = [];
-        foreach ($form->fieldNames() as $f) {
-            $values[$f] = $record->{$f} ?? '';
-        }
 
         return $this->adminView('admin.resource.form', [
             'title' => 'Edit ' . $class::label(),
             'slug' => $slug,
             'formFields' => $form->fields(),
-            'values' => $values,
+            'values' => $class::formValues($record),
             'record' => $record,
             'csrfToken' => Csrf::token(),
         ]);

@@ -5,22 +5,9 @@
 {% block heading %}{{ title }}{% endblock %}
 
 {% block body %}
-<div class="mx-auto max-w-3xl">
-    <p class="text-sm leading-relaxed text-zinc-400">Resources load from <code class="rounded-md bg-zinc-900 px-1.5 py-0.5 font-mono text-xs text-zinc-300 ring-1 ring-zinc-800">config/admin.php</code> (<code class="rounded-md bg-zinc-900 px-1.5 py-0.5 font-mono text-xs text-zinc-300 ring-1 ring-zinc-800">discover</code> → <code class="rounded-md bg-zinc-900 px-1.5 py-0.5 font-mono text-xs text-zinc-300 ring-1 ring-zinc-800">app/Admin/Resources</code>, plus optional <code class="rounded-md bg-zinc-900 px-1.5 py-0.5 font-mono text-xs text-zinc-300 ring-1 ring-zinc-800">resources</code> list).</p>
-
-    {% if resources is not empty %}
-        <ul class="mt-8 divide-y divide-zinc-800/80 rounded-xl border border-zinc-800/80 bg-zinc-900/20">
-            {% for r in resources %}
-                <li>
-                    <a class="flex items-center justify-between gap-3 px-4 py-3.5 text-sm text-zinc-200 transition-colors hover:bg-zinc-900/40" href="{{ route('admin.resource.index', { slug: r.slug }) }}">
-                        <span class="font-medium">{{ r.label }}</span>
-                        <span class="text-xs text-zinc-500">{{ r.slug }}</span>
-                    </a>
-                </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p class="mt-8 text-sm text-zinc-500">No resources configured.</p>
-    {% endif %}
+<div class="mx-auto max-w-7xl space-y-10">
+    {% for widget in dashboardWidgets %}
+        {% include 'admin/widgets/' ~ widget.kind ~ '.twig' with { widget: widget } %}
+    {% endfor %}
 </div>
 {% endblock %}

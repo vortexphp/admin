@@ -70,4 +70,19 @@ abstract class Resource
      * Create / edit form: use {@see Form} and concrete fields ({@see \Vortex\Admin\Forms\TextField}, {@see \Vortex\Admin\Forms\TextareaField}, …).
      */
     abstract public static function form(): Form;
+
+    /**
+     * Form field values for Twig. {@code $record} is null on create. Override to hide or normalize attributes (e.g. blank password on edit).
+     *
+     * @return array<string, mixed>
+     */
+    public static function formValues(?Model $record): array
+    {
+        $values = [];
+        foreach (static::form()->fieldNames() as $f) {
+            $values[$f] = $record === null ? '' : ($record->{$f} ?? '');
+        }
+
+        return $values;
+    }
 }

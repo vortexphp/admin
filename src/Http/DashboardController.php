@@ -4,24 +4,24 @@ declare(strict_types=1);
 
 namespace Vortex\Admin\Http;
 
-use Vortex\Admin\ResourceRegistry;
+use Vortex\Admin\DashboardWidgets;
+use Vortex\Admin\Navigation;
 use Vortex\Http\Response;
 
 final class DashboardController extends AdminHttpController
 {
+    public function __construct(
+        Navigation $navigation,
+        private readonly DashboardWidgets $dashboardWidgets,
+    ) {
+        parent::__construct($navigation);
+    }
+
     public function index(): Response
     {
-        $items = [];
-        foreach (ResourceRegistry::slugToClass() as $slug => $class) {
-            $items[] = [
-                'slug' => $slug,
-                'label' => $class::pluralLabel(),
-            ];
-        }
-
         return $this->adminView('admin.dashboard', [
             'title' => 'Admin',
-            'resources' => $items,
+            'dashboardWidgets' => $this->dashboardWidgets->toViewArray(),
         ]);
     }
 }

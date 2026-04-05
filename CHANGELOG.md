@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- Dashboard **`Widget`** types (`TextWidget`, `StatsGridWidget`, `LinkListWidget`, `ResourceLinksWidget`, `NoticeWidget`, `AdminOverviewStatsWidget`) and mutable **`DashboardWidgets`** singleton; `/admin` renders them via `admin/widgets/{kind}.twig`.
 - Injectable **`Navigation`** / **`NavLink`** / **`NavGroup`** (container singleton): header links with optional **`icon`** / **`iconClass`**, and grouped sections.
 - Tailwind-based admin stylesheet: `resources/admin.src.css`, `npm run build` → `resources/admin.css`; Twig layouts use utility classes.
 - Configurable index row actions: `TableRowAction`, `EditAction`, `DeleteAction`, `Table::withActions()`.

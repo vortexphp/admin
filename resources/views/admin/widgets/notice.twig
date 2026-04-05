@@ -1,0 +1,22 @@
+{% set tone = widget.tone %}
+{% if tone == 'warning' %}
+    {% set box = 'border-amber-500/30 bg-amber-500/5 ring-amber-500/20' %}
+    {% set titleCls = 'text-amber-200' %}
+    {% set msgCls = 'text-amber-100/90' %}
+{% elseif tone == 'danger' %}
+    {% set box = 'border-rose-500/35 bg-rose-500/5 ring-rose-500/15' %}
+    {% set titleCls = 'text-rose-200' %}
+    {% set msgCls = 'text-rose-100/90' %}
+{% else %}
+    {% set box = 'border-zinc-600/40 bg-zinc-900/50 ring-zinc-700/30' %}
+    {% set titleCls = 'text-zinc-200' %}
+    {% set msgCls = 'text-zinc-400' %}
+{% endif %}
+<div class="max-w-3xl rounded-xl border px-4 py-3 text-sm ring-1 {{ box }}">
+    {% if widget.title %}
+        <p class="font-medium {{ titleCls }}">{{ widget.title }}</p>
+        <p class="mt-1 {{ msgCls }}">{{ widget.message }}</p>
+    {% else %}
+        <p class="{{ msgCls }}">{{ widget.message }}</p>
+    {% endif %}
+</div>

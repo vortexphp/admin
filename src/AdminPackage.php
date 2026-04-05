@@ -6,7 +6,13 @@ namespace Vortex\Admin;
 
 use Vortex\Admin\Http\DashboardController;
 use Vortex\Admin\Http\ResourceController;
+use Vortex\Admin\DashboardWidgets;
 use Vortex\Admin\Navigation;
+use Vortex\Admin\Widgets\AdminOverviewStatsWidget;
+use Vortex\Admin\Widgets\NoticeTone;
+use Vortex\Admin\Widgets\NoticeWidget;
+use Vortex\Admin\Widgets\ResourceLinksWidget;
+use Vortex\Admin\Widgets\TextWidget;
 use Vortex\Container;
 use Vortex\Package\Package;
 use Vortex\Package\PackageRegistry;
@@ -18,6 +24,19 @@ final class AdminPackage extends Package
     public function register(Container $container, string $basePath): void
     {
         $container->singleton(Navigation::class, static fn (): Navigation => Navigation::make());
+
+        $container->singleton(DashboardWidgets::class, static fn (): DashboardWidgets => DashboardWidgets::make()
+            ->add(new NoticeWidget(
+                NoticeTone::Info,
+                'Use the sidebar for navigation; open a resource below to manage records.',
+                'Welcome',
+            ))
+            ->add(new AdminOverviewStatsWidget())
+            ->add(new TextWidget(
+                null,
+                'Resources load from config/admin.php (discover → app/Admin/Resources, plus optional resources list).',
+            ))
+            ->add(new ResourceLinksWidget('Resources')));
     }
 
     public function publicAssets(): array

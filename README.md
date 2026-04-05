@@ -57,6 +57,34 @@ $nav->add(\Vortex\Admin\NavGroup::make('System', function (\Vortex\Admin\NavGrou
 
 Arbitrary URLs use **`NavLink`** or **`$nav->link('Label', 'https://…')`**. Everything renders beside **Admin** on the dashboard, resource index, and resource forms.
 
+## Dashboard widgets
+
+**`Vortex\Admin\DashboardWidgets`** is a container singleton. The admin home (**`/admin`**, **`DashboardController`**) renders **`dashboardWidgets`**. Defaults: **`NoticeWidget`** (welcome) → **`AdminOverviewStatsWidget`** (registered resource count) → **`TextWidget`** (config hint) → **`ResourceLinksWidget`**. Replace or extend in **`Package::boot()`**:
+
+```php
+use Vortex\Admin\DashboardWidgets;
+use Vortex\Admin\Widgets\LinkListWidget;
+use Vortex\Admin\Widgets\NoticeTone;
+use Vortex\Admin\Widgets\NoticeWidget;
+use Vortex\Admin\Widgets\ResourceLinksWidget;
+use Vortex\Admin\Widgets\StatsGridWidget;
+use Vortex\Admin\Widgets\TextWidget;
+
+$dash = $container->make(DashboardWidgets::class);
+$dash->clear()
+    ->add(new NoticeWidget(NoticeTone::Info, 'Welcome back.', 'Hello'))
+    ->add(new StatsGridWidget('Today', [
+        ['label' => 'Orders', 'value' => '12', 'hint' => 'since midnight'],
+    ]))
+    ->add(new LinkListWidget('Tools', [
+        ['label' => 'Reports', 'href' => '/admin/reports', 'description' => 'CSV exports'],
+    ]))
+    ->add(new TextWidget(null, "Plain copy with line breaks.\nSecond line."))
+    ->add(new ResourceLinksWidget('CRUD'));
+```
+
+Each widget exposes a **`kind`** (Twig partial name under **`admin/widgets/`**). Add your own by implementing **`Vortex\Admin\Widgets\Widget`** and a matching **`admin/widgets/{kind}.twig`** in your app’s Twig paths.
+
 ## Resources (Filament-style CRUD)
 
 1. Add **`config/admin.php`**:
