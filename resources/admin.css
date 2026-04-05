@@ -1,0 +1,26 @@
+/* vortexphp/admin default shell */
+.vortex-admin {
+    margin: 0;
+    font-family: system-ui, sans-serif;
+    background: #0f1419;
+    color: #e6edf3;
+    min-height: 100vh;
+}
+
+.vortex-admin__main {
+    max-width: 48rem;
+    margin: 0 auto;
+    padding: 2.5rem 1.25rem;
+}
+
+.vortex-admin__title {
+    margin: 0 0 0.5rem;
+    font-size: 1.75rem;
+    font-weight: 600;
+}
+
+.vortex-admin__lead {
+    margin: 0;
+    opacity: 0.85;
+    line-height: 1.5;
+}
