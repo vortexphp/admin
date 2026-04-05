@@ -7,11 +7,17 @@ namespace Vortex\Admin\Tests;
 use PHPUnit\Framework\TestCase;
 use Vortex\Admin\Forms\CheckboxField;
 use Vortex\Admin\Forms\DateField;
+use Vortex\Admin\Forms\Form;
 use Vortex\Admin\Forms\HiddenField;
+use Vortex\Admin\Forms\HtmlField;
+use Vortex\Admin\Forms\MarkdownField;
 use Vortex\Admin\Forms\NumberField;
 use Vortex\Admin\Forms\PasswordField;
 use Vortex\Admin\Forms\SelectField;
+use Vortex\Admin\Forms\TagsField;
 use Vortex\Admin\Forms\TextField;
+use Vortex\Admin\Forms\ToggleField;
+use Vortex\Admin\Forms\UploadField;
 
 final class FormFieldsTest extends TestCase
 {
@@ -55,5 +61,52 @@ final class FormFieldsTest extends TestCase
         self::assertSame('hidden', HiddenField::make('x')->inputKind());
         self::assertSame('password', PasswordField::make('p')->inputKind());
         self::assertSame('text', TextField::make('t')->inputKind());
+    }
+
+    public function testToggleNormalizes(): void
+    {
+        $f = ToggleField::make('active');
+        self::assertTrue($f->normalizeRequestValue('1'));
+        self::assertFalse($f->normalizeRequestValue(null));
+    }
+
+    public function testTagsNormalizesCsvAndJson(): void
+    {
+        $f = TagsField::make('tags');
+        self::assertSame('a,b', $f->normalizeRequestValue('a, b'));
+        $j = TagsField::make('t')->asJson();
+        self::assertSame('["x","y"]', $j->normalizeRequestValue('["x","y"]'));
+        self::assertSame('["a"]', $j->normalizeRequestValue('[{"value":"a"}]'));
+    }
+
+    public function testUploadFieldKeepsExisting(): void
+    {
+        $f = UploadField::make('file');
+        self::assertSame('old/path.jpg', $f->normalizeUpload(null, 'old/path.jpg'));
+    }
+
+    public function testUploadFieldDiscardWhenEmpty(): void
+    {
+        $f = UploadField::make('file')->discardExistingWhenEmpty();
+        self::assertSame('', $f->normalizeUpload(null, 'old/path.jpg'));
+    }
+
+    public function testFormMultipartAndRichFlags(): void
+    {
+        $plain = Form::make(TextField::make('t'));
+        self::assertFalse($plain->requiresMultipart());
+        self::assertSame(['markdown' => false, 'html' => false, 'tags' => false], $plain->richEditorAssets());
+
+        $rich = Form::make(
+            UploadField::make('a'),
+            MarkdownField::make('m'),
+            HtmlField::make('h'),
+            TagsField::make('x'),
+        );
+        self::assertTrue($rich->requiresMultipart());
+        $k = $rich->richEditorAssets();
+        self::assertTrue($k['markdown']);
+        self::assertTrue($k['html']);
+        self::assertTrue($k['tags']);
     }
 }

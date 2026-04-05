@@ -209,9 +209,11 @@ Forms include **`_csrf`**; invalid CSRF redirects back without flash error (hard
 **Form API** (same idea as the table)
 
 - **`Form::make(...)`** — field order; each field is its own class under **`Vortex\Admin\Forms\`**.
-- Built-ins: **`TextField`**, **`TextareaField`**, **`PasswordField`**, **`EmailField`**, **`NumberField`** ( **`->integer()`**, **`->min()`** / **`->max()`** / **`->step()`**, **`->emptyAsNull()`** ), **`HiddenField`**, **`CheckboxField`**, **`SelectField::make('role', ['a' => 'A'], 'Label')`**, **`DateField`** (HTML **`Y-m-d`**).
-- Each field’s **`inputKind()`** maps to **`resources/views/admin/resource/fields/{kind}.twig`**. Implement **`FormField::toViewArray()`** / **`normalizeRequestValue()`** when you add types.
-- **`ResourceController`** builds POST payloads with **`normalizeRequestValue()`** per field (checkboxes, numbers, dates, etc.).
+- Built-ins: **`TextField`**, **`TextareaField`**, **`PasswordField`**, **`EmailField`**, **`NumberField`**, **`HiddenField`**, **`CheckboxField`**, **`ToggleField`** (switch UI), **`SelectField::make('role', ['a' => 'A'], 'Label')`**, **`DateField`**, **`UploadField`** (multipart; stores under **`public/{dir}/`** via **`->to('uploads/posts')`**, optional **`->maxKb()`**, **`->allowedMimes()`**, **`->allowedExtensions()`**, **`->accept()`**, **`->discardExistingWhenEmpty()`**), **`MarkdownField`** (EasyMDE from CDN), **`HtmlField`** (Quill WYSIWYG from CDN — **sanitize HTML on output** in your app), **`TagsField`** (Tagify; **`->asJson()`** or CSV **`->delimiter(',')`**).
+- Rich editors load JS/CSS from jsDelivr on resource forms only (`layout` **`{% block scripts %}`**). Internet access is required in the browser for first load (or vendor assets locally if you replace **`form_rich_assets.twig`**).
+- Any **`UploadField`** sets the form’s **`enctype="multipart/form-data"`** automatically.
+- Each field’s **`inputKind()`** maps to **`resources/views/admin/resource/fields/{kind}.twig`**. Implement **`FormField::toViewArray()`** / **`normalizeRequestValue()`** (and **`UploadField::normalizeUpload()`**) when you add types.
+- **`ResourceController`** merges POST with **`normalizeRequestValue()`**; file fields use **`Request::file()`** and keep the previous path on edit when **`keepExistingOnEmpty`** is true.
 
 ## What it registers
 

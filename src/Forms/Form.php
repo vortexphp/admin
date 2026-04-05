@@ -37,4 +37,33 @@ final class Form
     {
         return array_map(static fn (FormField $f): string => $f->name, $this->fields);
     }
+
+    public function requiresMultipart(): bool
+    {
+        foreach ($this->fields as $f) {
+            if ($f instanceof UploadField) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @return array{markdown: bool, html: bool, tags: bool}
+     */
+    public function richEditorAssets(): array
+    {
+        $markdown = $html = $tags = false;
+        foreach ($this->fields as $f) {
+            match ($f->inputKind()) {
+                'markdown' => $markdown = true,
+                'html' => $html = true,
+                'tags' => $tags = true,
+                default => null,
+            };
+        }
+
+        return ['markdown' => $markdown, 'html' => $html, 'tags' => $tags];
+    }
 }

@@ -1,0 +1,6 @@
+<label class="text-xs font-medium text-zinc-500" for="field_{{ field.name }}">{{ field.label }}</label>
+<input id="field_{{ field.name }}" type="file" name="{{ field.name }}" accept="{{ field.accept|default('*/*') }}"
+       class="mt-1 block w-full text-sm text-zinc-300 file:mr-3 file:rounded-lg file:border-0 file:bg-zinc-800 file:px-3 file:py-2 file:text-sm file:text-zinc-200 hover:file:bg-zinc-700">
+{% if values[field.name] %}
+    <p class="mt-1 text-xs text-zinc-500">Current file: <span class="font-mono text-zinc-400">{{ values[field.name] }}</span></p>
+{% endif %}

@@ -6,6 +6,7 @@ namespace Vortex\Admin\Http;
 
 use Vortex\Admin\Forms\Form;
 use Vortex\Admin\Forms\FormField;
+use Vortex\Admin\Forms\UploadField;
 use Vortex\Admin\ResourceRegistry;
 use Vortex\Admin\Tables\Table;
 use Vortex\Admin\Tables\TableColumn;
@@ -146,13 +147,17 @@ final class ResourceController extends AdminHttpController
             return Response::make('Not found', 404);
         }
 
+        $form = $class::form();
+
         return $this->adminView('admin.resource.form', [
             'title' => 'Create ' . $class::label(),
             'slug' => $slug,
             'formFields' => array_map(
                 static fn (FormField $f): array => $f->toViewArray(),
-                $class::form()->fields(),
+                $form->fields(),
             ),
+            'formMultipart' => $form->requiresMultipart(),
+            'formRichEditors' => $form->richEditorAssets(),
             'values' => $class::formValues(null),
             'record' => null,
             'csrfToken' => Csrf::token(),
@@ -170,7 +175,7 @@ final class ResourceController extends AdminHttpController
         }
 
         $modelClass = $class::model();
-        $payload = $this->formPayload($class::form());
+        $payload = $this->formPayload($class::form(), null);
         $modelClass::create($payload);
         Session::flash('admin_success', 'Created.');
 
@@ -198,6 +203,8 @@ final class ResourceController extends AdminHttpController
                 static fn (FormField $f): array => $f->toViewArray(),
                 $form->fields(),
             ),
+            'formMultipart' => $form->requiresMultipart(),
+            'formRichEditors' => $form->richEditorAssets(),
             'values' => $class::formValues($record),
             'record' => $record,
             'csrfToken' => Csrf::token(),
@@ -220,7 +227,7 @@ final class ResourceController extends AdminHttpController
             return Response::make('Not found', 404);
         }
 
-        $payload = $this->formPayload($class::form());
+        $payload = $this->formPayload($class::form(), $record);
         $record->update($payload);
         Session::flash('admin_success', 'Saved.');
 
@@ -267,12 +274,22 @@ final class ResourceController extends AdminHttpController
     /**
      * @return array<string, mixed>
      */
-    private function formPayload(Form $form): array
+    private function formPayload(Form $form, ?Model $record): array
     {
         $body = Request::all();
         $out = [];
         foreach ($form->fields() as $field) {
             $k = $field->name;
+            if ($field instanceof UploadField) {
+                $existing = null;
+                if ($record !== null) {
+                    $ev = $record->{$k} ?? null;
+                    $existing = is_string($ev) ? $ev : ($ev !== null && is_scalar($ev) ? (string) $ev : null);
+                }
+                $out[$k] = $field->normalizeUpload(Request::file($k), $existing);
+
+                continue;
+            }
             $raw = $body[$k] ?? null;
             $out[$k] = $field->normalizeRequestValue($raw);
         }

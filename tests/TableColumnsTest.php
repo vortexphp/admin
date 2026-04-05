@@ -11,6 +11,7 @@ use Vortex\Admin\Tables\Columns\ColorColumn;
 use Vortex\Admin\Tables\Columns\DatetimeColumn;
 use Vortex\Admin\Tables\Columns\NumericColumn;
 use Vortex\Admin\Tables\Columns\TextColumn;
+use Vortex\Admin\Tables\Columns\ToggleColumn;
 
 final class TableColumnsTest extends TestCase
 {
@@ -39,6 +40,18 @@ final class TableColumnsTest extends TestCase
     {
         $c = TextColumn::make('body', null, 5);
         self::assertSame('1234…', $c->formatCellValue('123456789'));
+    }
+
+    public function testToggleColumnNormalizesBooleans(): void
+    {
+        $c = ToggleColumn::make('active')->labels('Locked', 'Open', 'N/A');
+        self::assertTrue($c->formatCellValue(1));
+        self::assertFalse($c->formatCellValue('0'));
+        self::assertNull($c->formatCellValue(null));
+        self::assertNull($c->formatCellValue('maybe'));
+        $v = $c->toViewArray();
+        self::assertSame('toggle', $v['kind']);
+        self::assertSame('Locked', $v['trueLabel']);
     }
 
     public function testColorColumnNormalizesHex(): void

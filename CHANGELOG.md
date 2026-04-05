@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- **`UploadField`**, **`MarkdownField`** (EasyMDE), **`HtmlField`** (Quill), **`TagsField`** (Tagify), **`ToggleField`**; **`Form::requiresMultipart()`**, **`Form::richEditorAssets()`**; **`layout` scripts** block + **`form_rich_assets.twig`** (CDN).
 - Index **column** types in **`Tables/Columns/`** (**`TextColumn`**, **`NumericColumn`**, **`BooleanColumn`**, **`DatetimeColumn`**, **`EmailColumn`**, **`UrlColumn`**, **`BadgeColumn`**) with Twig cell partials **`admin/resource/cells/`**; **`TableColumn`** is abstract.
 - Form input types: **`PasswordField`**, **`EmailField`**, **`NumberField`**, **`HiddenField`**, **`CheckboxField`**, **`SelectField`**, **`DateField`** with partials **`admin/resource/fields/`**; **`FormField::toViewArray()`** / **`normalizeRequestValue()`**.
 - Dashboard **`Widget`** types (`TextWidget`, `StatsGridWidget`, `LinkListWidget`, `ResourceLinksWidget`, `NoticeWidget`, `AdminOverviewStatsWidget`) and mutable **`DashboardWidgets`** singleton; `/admin` renders them via `admin/widgets/{kind}.twig`.

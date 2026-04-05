@@ -71,7 +71,7 @@
                     <tr class="border-b border-zinc-800/80 transition-colors last:border-0 hover:bg-zinc-900/35">
                         {% for col in tableColumns %}
                             {% set cell = attribute(row, col.name) %}
-                            <td class="px-4 py-3 text-sm text-zinc-200 {% if col.kind in ['text', 'numeric', 'email', 'url', 'datetime', 'color'] %}whitespace-nowrap{% endif %}">
+                            <td class="px-4 py-3 text-sm text-zinc-200 {% if col.kind in ['text', 'numeric', 'email', 'url', 'datetime', 'color', 'toggle'] %}whitespace-nowrap{% endif %}">
                                 {% include 'admin/resource/cells/' ~ col.kind ~ '.twig' with { col: col, cell: cell } only %}
                             </td>
                         {% endfor %}

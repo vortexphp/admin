@@ -1,0 +1,22 @@
+{% if cell is same as(true) %}
+    <span class="inline-flex items-center gap-2 whitespace-nowrap" role="img" aria-label="{{ col.trueLabel }}">
+        <span class="relative inline-flex h-6 w-11 shrink-0 items-center rounded-full border border-emerald-500/40 bg-emerald-600/90 shadow-inner ring-1 ring-black/20">
+            <span class="inline-block h-5 w-5 translate-x-5 rounded-full bg-white shadow-sm transition-transform"></span>
+        </span>
+        <span class="text-xs font-medium text-emerald-400/90">{{ col.trueLabel }}</span>
+    </span>
+{% elseif cell is same as(false) %}
+    <span class="inline-flex items-center gap-2 whitespace-nowrap" role="img" aria-label="{{ col.falseLabel }}">
+        <span class="relative inline-flex h-6 w-11 shrink-0 items-center rounded-full border border-zinc-600 bg-zinc-700/90 shadow-inner ring-1 ring-black/15">
+            <span class="inline-block h-5 w-5 translate-x-0.5 rounded-full bg-zinc-200 shadow-sm transition-transform"></span>
+        </span>
+        <span class="text-xs text-zinc-400">{{ col.falseLabel }}</span>
+    </span>
+{% else %}
+    <span class="inline-flex items-center gap-2 whitespace-nowrap text-zinc-500" role="img" aria-label="{{ col.emptyLabel }}">
+        <span class="relative inline-flex h-6 w-11 shrink-0 items-center rounded-full border border-dashed border-zinc-600 bg-zinc-900/40">
+            <span class="inline-block h-5 w-5 translate-x-0.5 rounded-full bg-zinc-600/80"></span>
+        </span>
+        <span class="text-xs">{{ col.emptyLabel }}</span>
+    </span>
+{% endif %}

@@ -1,0 +1,9 @@
+<div class="admin-markdown-field flex flex-col gap-1.5">
+    <label class="text-xs font-medium text-zinc-500" for="field_{{ field.name }}">{{ field.label }}</label>
+    {# Plain textarea until EasyMDE mounts; avoid Tailwind borders here (double border with CM). #}
+    <textarea id="field_{{ field.name }}" name="{{ field.name }}" data-admin-markdown
+              data-min-height="{{ field.minHeightPx|default(280) }}"
+              placeholder="{{ field.placeholder|default('') }}"
+              class="w-full rounded-md border border-zinc-800 bg-zinc-950 px-3 py-2 font-mono text-sm text-zinc-100 placeholder:text-zinc-600"
+              rows="10">{{ values[field.name] ?? '' }}</textarea>
+</div>

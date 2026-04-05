@@ -11,10 +11,11 @@
 {% endblock %}
 
 {% block body %}
-<div class="mx-auto max-w-lg">
+<div class="mx-auto max-w-3xl">
     <form method="post"
           action="{% if record %}{{ route('admin.resource.update', { slug: slug, id: record.id }) }}{% else %}{{ route('admin.resource.store', { slug: slug }) }}{% endif %}"
-          class="mt-2 flex flex-col gap-4">
+          class="mt-2 flex flex-col gap-4"
+          {% if formMultipart|default(false) %}enctype="multipart/form-data"{% endif %}>
         <input type="hidden" name="_csrf" value="{{ csrfToken }}">
 
         {% for field in formFields %}
@@ -27,4 +28,8 @@
         </div>
     </form>
 </div>
+{% endblock %}
+
+{% block scripts %}
+    {% include 'admin/resource/form_rich_assets.twig' with { formRichEditors: formRichEditors|default({ markdown: false, html: false, tags: false }) } only %}
 {% endblock %}
