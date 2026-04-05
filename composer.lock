@@ -526,7 +526,7 @@
             "dist": {
                 "type": "path",
                 "url": "../framework",
-                "reference": "d2683ef11d013b0a7116fec808986863acfa57ce"
+                "reference": "b7d56b4d5755f8654dfeeff25bca185708b710dd"
             },
             "require": {
                 "ext-mbstring": "*",

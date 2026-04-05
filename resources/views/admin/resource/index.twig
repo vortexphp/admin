@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ title }} — Admin</title>
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="vortex-admin">
+<header class="vortex-admin__bar">
+    <a href="{{ route('admin.dashboard') }}" class="vortex-admin__brand">Admin</a>
+    <span class="vortex-admin__crumb">{{ title }}</span>
+</header>
+<main class="vortex-admin__main">
+    {% set flash = session_flash('admin_success') %}
+    {% if flash %}
+        <p class="vortex-admin__flash">{{ flash }}</p>
+    {% endif %}
+
+    <div class="vortex-admin__toolbar">
+        <h1 class="vortex-admin__title">{{ title }}</h1>
+        <a href="{{ route('admin.resource.create', { slug: slug }) }}" class="vortex-admin__btn">Create</a>
+    </div>
+
+    <div class="vortex-admin__tablewrap">
+        <table class="vortex-admin__table">
+            <thead>
+            <tr>
+                {% for col in columns %}
+                    <th>{{ col }}</th>
+                {% endfor %}
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for row in records %}
+                <tr>
+                    {% for col in columns %}
+                        <td>{{ row[col] }}</td>
+                    {% endfor %}
+                    <td class="vortex-admin__actions">
+                        {% if row.id is defined %}
+                            <a href="{{ route('admin.resource.edit', { slug: slug, id: row.id }) }}">Edit</a>
+                            <form method="post" action="{{ route('admin.resource.destroy', { slug: slug, id: row.id }) }}" class="vortex-admin__inline-form">
+                                <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+                                <button type="submit" class="vortex-admin__linkbtn">Delete</button>
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</main>
+</body>
+</html>

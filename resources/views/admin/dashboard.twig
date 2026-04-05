@@ -7,9 +7,22 @@
     <link rel="stylesheet" href="/css/admin.css">
 </head>
 <body class="vortex-admin">
+<header class="vortex-admin__bar">
+    <span class="vortex-admin__brand">{{ title }}</span>
+</header>
 <main class="vortex-admin__main">
     <h1 class="vortex-admin__title">{{ title }}</h1>
-    <p class="vortex-admin__lead">vortexphp/admin package — add auth and your tools here.</p>
+    <p class="vortex-admin__lead">Register resource classes in <code class="vortex-admin__code">config/admin.php</code> (<code class="vortex-admin__code">resources</code> key).</p>
+
+    {% if resources is not empty %}
+        <ul class="vortex-admin__linklist">
+            {% for r in resources %}
+                <li><a href="{{ route('admin.resource.index', { slug: r.slug }) }}">{{ r.label }}</a></li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="vortex-admin__muted">No resources configured.</p>
+    {% endif %}
 </main>
 </body>
 </html>

@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ title }} — Admin</title>
+    <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body class="vortex-admin">
+<header class="vortex-admin__bar">
+    <a href="{{ route('admin.dashboard') }}" class="vortex-admin__brand">Admin</a>
+    <a href="{{ route('admin.resource.index', { slug: slug }) }}" class="vortex-admin__crumb">{{ slug }}</a>
+</header>
+<main class="vortex-admin__main vortex-admin__main--narrow">
+    <h1 class="vortex-admin__title">{{ title }}</h1>
+
+    <form method="post"
+          action="{% if record %}{{ route('admin.resource.update', { slug: slug, id: record.id }) }}{% else %}{{ route('admin.resource.store', { slug: slug }) }}{% endif %}"
+          class="vortex-admin__form">
+        <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+
+        {% for field in fields %}
+            <label class="vortex-admin__label">{{ field }}</label>
+            {% set field_lc = field|lower %}
+            {% if field_lc in ['body', 'content', 'description', 'notes', 'text', 'note', 'message', 'details'] or 'body' in field_lc %}
+                <textarea name="{{ field }}" class="vortex-admin__input vortex-admin__textarea" rows="6">{{ values[field] ?? '' }}</textarea>
+            {% else %}
+                <input type="text" name="{{ field }}" value="{{ values[field] ?? '' }}" class="vortex-admin__input" autocomplete="off">
+            {% endif %}
+        {% endfor %}
+
+        <div class="vortex-admin__form-actions">
+            <button type="submit" class="vortex-admin__btn">Save</button>
+            <a href="{{ route('admin.resource.index', { slug: slug }) }}" class="vortex-admin__btn vortex-admin__btn--ghost">Cancel</a>
+        </div>
+    </form>
+</main>
+</body>
+</html>
