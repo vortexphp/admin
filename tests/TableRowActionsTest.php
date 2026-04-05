@@ -7,6 +7,7 @@ namespace Vortex\Admin\Tests;
 use PHPUnit\Framework\TestCase;
 use Vortex\Admin\Tables\DeleteRowAction;
 use Vortex\Admin\Tables\EditRowAction;
+use Vortex\Admin\Tables\LinkRowAction;
 use Vortex\Admin\Tables\ModalRowAction;
 use Vortex\Admin\Tables\Table;
 use Vortex\Admin\Tables\Columns\TextColumn;
@@ -27,6 +28,16 @@ final class TableRowActionsTest extends TestCase
         self::assertSame('link', $resolved['kind'] ?? null);
         self::assertSame('Modify', $resolved['label'] ?? null);
         self::assertSame('admin.resource.edit', $resolved['route'] ?? null);
+    }
+
+    public function testLinkRowActionResolve(): void
+    {
+        $a = LinkRowAction::toRoute('Home', 'admin.dashboard', []);
+        $r = $a->resolve('any', []);
+        self::assertSame('link', $r['kind'] ?? null);
+        self::assertSame('Home', $r['label'] ?? null);
+        self::assertSame('admin.dashboard', $r['route'] ?? null);
+        self::assertSame([], $r['routeParams'] ?? null);
     }
 
     public function testDeleteResolveRequiresId(): void

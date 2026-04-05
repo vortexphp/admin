@@ -6,6 +6,7 @@ namespace Vortex\Admin;
 
 use Vortex\Admin\Http\DashboardController;
 use Vortex\Admin\Http\ResourceController;
+use Vortex\Admin\Http\ShowcaseController;
 use Vortex\Admin\DashboardWidgets;
 use Vortex\Admin\Navigation;
 use Vortex\Admin\Widgets\AdminOverviewStatsWidget;
@@ -55,11 +56,19 @@ final class AdminPackage extends Package
 
         Route::get('/admin', [DashboardController::class, 'index'])->name('admin.dashboard');
 
+        Route::get('/admin/showcase/tables', [ShowcaseController::class, 'tables'])->name('admin.showcase.tables');
+
         Route::get('/admin/{slug}/create', [ResourceController::class, 'create'])->name('admin.resource.create');
         Route::post('/admin/{slug}', [ResourceController::class, 'store'])->name('admin.resource.store');
         Route::get('/admin/{slug}/{id}/edit', [ResourceController::class, 'edit'])->name('admin.resource.edit');
         Route::post('/admin/{slug}/{id}/delete', [ResourceController::class, 'destroy'])->name('admin.resource.destroy');
         Route::post('/admin/{slug}/{id}', [ResourceController::class, 'update'])->name('admin.resource.update');
         Route::get('/admin/{slug}', [ResourceController::class, 'index'])->name('admin.resource.index');
+
+        $container->make(Navigation::class)->link(
+            'Table showcase',
+            route('admin.showcase.tables'),
+            'table',
+        );
     }
 }

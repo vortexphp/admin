@@ -13,6 +13,7 @@ final class Table
      * @param list<TableColumn> $columns
      * @param list<TableFilter> $filters
      * @param list<TableRowAction> $actions
+     * @param (callable(): array<int|string, array<string, mixed>>|list<array<string, mixed>>)|null $recordsCallback
      */
     public function __construct(
         private readonly array $columns,
@@ -20,6 +21,7 @@ final class Table
         private readonly array $actions = [],
         private readonly ?string $emptyMessage = null,
         private readonly bool $columnPickerUiEnabled = true,
+        private $recordsCallback = null,
     ) {
     }
 
@@ -31,7 +33,36 @@ final class Table
             [EditRowAction::make(), DeleteRowAction::make()],
             null,
             true,
+            null,
         );
+    }
+
+    /**
+     * Use callback-supplied rows instead of the resource model query on the index. Return a list of
+     * associative rows or an id-keyed map (missing {@code id} uses each key). Table filters / global
+     * search are not applied to SQL; sorting uses in-memory values for the active column.
+     *
+     * @param callable(): array<int|string, array<string, mixed>>|list<array<string, mixed>> $provider
+     * @return static
+     */
+    public function records(callable $provider): self
+    {
+        return new self(
+            $this->columns,
+            $this->filters,
+            $this->actions,
+            $this->emptyMessage,
+            $this->columnPickerUiEnabled,
+            $provider,
+        );
+    }
+
+    /**
+     * @return (callable(): mixed)|null
+     */
+    public function recordsProvider(): ?callable
+    {
+        return is_callable($this->recordsCallback) ? $this->recordsCallback : null;
     }
 
     /**
@@ -39,7 +70,7 @@ final class Table
      */
     public function withFilters(TableFilter ...$filters): self
     {
-        return new self($this->columns, array_values($filters), $this->actions, $this->emptyMessage, $this->columnPickerUiEnabled);
+        return new self($this->columns, array_values($filters), $this->actions, $this->emptyMessage, $this->columnPickerUiEnabled, $this->recordsCallback);
     }
 
     /**
@@ -49,7 +80,7 @@ final class Table
      */
     public function withActions(TableRowAction ...$actions): self
     {
-        return new self($this->columns, $this->filters, array_values($actions), $this->emptyMessage, $this->columnPickerUiEnabled);
+        return new self($this->columns, $this->filters, array_values($actions), $this->emptyMessage, $this->columnPickerUiEnabled, $this->recordsCallback);
     }
 
     /**
@@ -62,7 +93,7 @@ final class Table
     {
         $filter = GlobalSearchFilter::make($paramName, $label ?? 'Search', $columns);
 
-        return new self($this->columns, [...$this->filters, $filter], $this->actions, $this->emptyMessage, $this->columnPickerUiEnabled);
+        return new self($this->columns, [...$this->filters, $filter], $this->actions, $this->emptyMessage, $this->columnPickerUiEnabled, $this->recordsCallback);
     }
 
     /**
@@ -72,7 +103,7 @@ final class Table
      */
     public function withEmptyMessage(string $message): self
     {
-        return new self($this->columns, $this->filters, $this->actions, $message, $this->columnPickerUiEnabled);
+        return new self($this->columns, $this->filters, $this->actions, $message, $this->columnPickerUiEnabled, $this->recordsCallback);
     }
 
     /**
@@ -82,7 +113,7 @@ final class Table
      */
     public function withoutColumnPicker(): self
     {
-        return new self($this->columns, $this->filters, $this->actions, $this->emptyMessage, false);
+        return new self($this->columns, $this->filters, $this->actions, $this->emptyMessage, false, $this->recordsCallback);
     }
 
     public function emptyMessage(): ?string

@@ -1,5 +1,6 @@
 {# Host for admin.modal.js: clone <template> contents into data-adm-modal-body #}
-<div id="adm_modal" class="fixed inset-0 z-[100] flex items-center justify-center p-4" hidden role="dialog" aria-modal="true" aria-labelledby="adm_modal_title">
+{# Tailwind .flex can override the [hidden] attribute alone; keep .hidden class in sync in admin.modal.js #}
+<div id="adm_modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-4" hidden role="dialog" aria-modal="true" aria-labelledby="adm_modal_title">
     <div class="absolute inset-0 bg-zinc-950/75 backdrop-blur-[1px]" data-adm-modal-backdrop tabindex="-1" aria-hidden="true"></div>
     <div class="relative z-10 max-h-[min(90vh,42rem)] w-full max-w-lg overflow-hidden rounded-xl border border-zinc-700/90 bg-zinc-950 shadow-2xl ring-1 ring-zinc-800/80" data-adm-modal-panel>
         <div class="flex items-center justify-between gap-3 border-b border-zinc-800/80 bg-zinc-900/60 px-4 py-3">

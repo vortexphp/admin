@@ -77,8 +77,12 @@ final class BelongsToColumn extends TableColumn
         return [$this->name];
     }
 
-    public function resolveRowValue(Model $row): mixed
+    public function resolveRowValue(Model|array $row): mixed
     {
+        if (is_array($row)) {
+            return $row[$this->name] ?? null;
+        }
+
         $related = $this->terminalRelatedModel($row);
         if ($related !== null) {
             return $related->{$this->displayAttribute} ?? null;

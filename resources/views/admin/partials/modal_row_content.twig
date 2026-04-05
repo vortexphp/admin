@@ -24,5 +24,10 @@
         </div>
     {% endif %}
 {% elseif content.type == 'include' %}
-    {% include content.template with content.with|merge({ slug: slug, csrfToken: csrfToken, modalId: modalId }) only %}
+    <div class="adm-modal-include flex flex-col gap-4">
+        {% include content.template with content.with|merge({ slug: slug, csrfToken: csrfToken, modalId: modalId }) only %}
+        <div class="flex justify-end border-t border-zinc-800/80 pt-3">
+            <button type="button" class="inline-flex items-center rounded-lg border border-zinc-700 bg-transparent px-3.5 py-2 text-sm font-medium text-zinc-200 ring-1 ring-zinc-800/40 hover:bg-zinc-900/60" data-adm-modal-close data-adm-modal-autofocus>Close</button>
+        </div>
+    </div>
 {% endif %}

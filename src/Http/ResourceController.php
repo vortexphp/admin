@@ -11,6 +11,7 @@ use Vortex\Admin\Resource;
 use Vortex\Admin\ResourceRegistry;
 use Vortex\Admin\Support\PublicAssetUrl;
 use Vortex\Admin\SqlIdentifier;
+use Vortex\Admin\Tables\CustomTableRecords;
 use Vortex\Admin\Tables\Table;
 use Vortex\Admin\Tables\TableColumn;
 use Vortex\Database\Model;
@@ -34,6 +35,7 @@ final class ResourceController extends AdminHttpController
         $query = $modelClass::query();
         $queryString = Request::hasCurrent() ? Request::query() : [];
         $filterValues = [];
+        $useCustomRecords = $table->recordsProvider() !== null;
         foreach ($table->filters() as $filter) {
             $param = $filter->queryParam();
             $raw = $queryString[$param] ?? '';
@@ -41,7 +43,9 @@ final class ResourceController extends AdminHttpController
                 continue;
             }
             $filterValues[$param] = is_string($raw) ? $raw : (string) $raw;
-            $filter->apply($query, $filterValues[$param]);
+            if (! $useCustomRecords) {
+                $filter->apply($query, $filterValues[$param]);
+            }
         }
 
         $page = 1;
@@ -56,20 +60,8 @@ final class ResourceController extends AdminHttpController
         $perPage = $perPageResolution['perPage'];
         $perPageOptions = $perPageResolution['options'];
 
-        $withPaths = self::uniqueEagerPaths([...$table->eagerRelationPaths(), ...$class::indexQueryWith()]);
-        if ($withPaths !== []) {
-            $query->with($withPaths);
-        }
-
-        $class::modifyIndexQuery($query);
-
         $sortState = self::resolveTableSort($class, $table, $queryString);
-        if ($sortState['apply'] !== null) {
-            [$orderCol, $orderDir] = $sortState['apply'];
-            $query->orderBy($orderCol, $orderDir);
-        }
 
-        $paginator = $query->paginate($page, $perPage);
         $listQuery = $filterValues;
         if (count($perPageOptions) > 1) {
             $listQuery['per_page'] = (string) $perPage;
@@ -82,13 +74,42 @@ final class ResourceController extends AdminHttpController
             route('admin.resource.index', ['slug' => $slug]),
             $listQuery,
         );
-        $paginator = $paginator->withBasePath($listPath, 'page');
 
-        $records = [];
-        /** @var list<Model> $rows */
-        $rows = $paginator->items;
-        foreach ($rows as $row) {
-            $records[] = $this->rowPayload($row, $table);
+        if ($useCustomRecords) {
+            $provider = $table->recordsProvider();
+            $raw = $provider !== null ? $provider() : [];
+            $normalized = CustomTableRecords::normalize($raw);
+            $sorted = CustomTableRecords::sort($normalized, $sortState['uiKey'], $sortState['dir']);
+            $total = count($sorted);
+            $offset = ($page - 1) * $perPage;
+            $pageRows = array_slice($sorted, $offset, $perPage);
+            $records = [];
+            foreach ($pageRows as $row) {
+                $records[] = $this->buildRowPayload($table, $row);
+            }
+            $paginator = new ArrayIndexPaginator($total, $perPage, $page, $listPath);
+        } else {
+            $withPaths = self::uniqueEagerPaths([...$table->eagerRelationPaths(), ...$class::indexQueryWith()]);
+            if ($withPaths !== []) {
+                $query->with($withPaths);
+            }
+
+            $class::modifyIndexQuery($query);
+
+            if ($sortState['apply'] !== null) {
+                [$orderCol, $orderDir] = $sortState['apply'];
+                $query->orderBy($orderCol, $orderDir);
+            }
+
+            $paginator = $query->paginate($page, $perPage);
+            $paginator = $paginator->withBasePath($listPath, 'page');
+
+            $records = [];
+            /** @var list<Model> $rows */
+            $rows = $paginator->items;
+            foreach ($rows as $row) {
+                $records[] = $this->buildRowPayload($table, $row);
+            }
         }
 
         $tableRowActions = [];
@@ -153,6 +174,7 @@ final class ResourceController extends AdminHttpController
         return $this->adminView('admin.resource.index', [
             'title' => $class::pluralLabel(),
             'slug' => $slug,
+            'tableListUrl' => $indexBaseUrl,
             'tableColumns' => $tableColumnsView,
             'tableFilters' => $table->filters(),
             'tableActions' => $table->actions(),
@@ -445,15 +467,19 @@ final class ResourceController extends AdminHttpController
     /**
      * @return array<string, mixed>
      */
-    private function rowPayload(Model $row, Table $table): array
+    private function buildRowPayload(Table $table, Model|array $row): array
     {
         $out = [];
         foreach ($table->columns() as $col) {
             $raw = $col->resolveRowValue($row);
             $out[$col->name] = $col->formatCellValue($raw);
         }
-        if (! array_key_exists('id', $out) && isset($row->id)) {
-            $out['id'] = $row->id;
+        if (! array_key_exists('id', $out)) {
+            if ($row instanceof Model && isset($row->id)) {
+                $out['id'] = $row->id;
+            } elseif (is_array($row) && array_key_exists('id', $row)) {
+                $out['id'] = $row['id'];
+            }
         }
 
         return $out;

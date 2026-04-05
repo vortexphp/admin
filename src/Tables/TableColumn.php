@@ -71,10 +71,15 @@ abstract class TableColumn
 
     /**
      * Raw value before {@see formatCellValue()} (e.g. a relation column reads a nested model).
+     * For {@see Table::records()} rows, {@code $row} is an array and the default reads {@code $row[$this->name]}.
      */
-    public function resolveRowValue(Model $row): mixed
+    public function resolveRowValue(Model|array $row): mixed
     {
-        return $row->{$this->name} ?? null;
+        if ($row instanceof Model) {
+            return $row->{$this->name} ?? null;
+        }
+
+        return $row[$this->name] ?? null;
     }
 
     /**

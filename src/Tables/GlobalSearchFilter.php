@@ -45,6 +45,14 @@ final class GlobalSearchFilter extends TableFilter
         return new self($this->name, $label, $this->columns);
     }
 
+    /**
+     * @return list<string>
+     */
+    public function searchColumns(): array
+    {
+        return $this->columns;
+    }
+
     public function inputKind(): string
     {
         return 'text';

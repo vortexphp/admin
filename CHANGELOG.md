@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Added
 
+- **Table showcase**: `GET /admin/showcase/tables` (`admin.showcase.tables`), **ShowcaseController**, **ShowcaseTableData** (demo rows + in-memory filters for `Table::records()`), nav link **Table showcase**, **`LinkRowAction`** (named-route link row action), **`GlobalSearchFilter::searchColumns()`**, shared Twig **`admin/partials/resource_index_table.twig`** + **`tableListUrl`** on resource index.
+- **`Table::records(callable)`**: index rows from a callback (list or id-keyed map); in-memory sort and pagination; SQL filters / global search are not applied. **`CustomTableRecords`**, **`ArrayIndexPaginator`**. **`TableColumn::resolveRowValue()`** accepts arrays for static rows (including **`BelongsToColumn`** / **`BelongsToImageColumn`** via keyed values).
 - **`ModalRowAction`**: index row action **`modal`** opens **`AdmModal`** / **`admin.modal.js`**. **`content.type`** is **`form`** (field specs or trusted inner HTML + POST), **`html`** (trusted markup, optional footer), or **`include`** (Twig partial + **`with`** context). Assets: **`admin.modal.js`**, **`modal_shell.twig`**, **`modal_row_content.twig`**, **`modal_form_fields.twig`**.
 - **`UploadField`**, **`MarkdownField`** (EasyMDE), **`HtmlField`** (Quill), **`TagsField`** (Tagify), **`ToggleField`**; **`Form::requiresMultipart()`**, **`Form::richEditorAssets()`**; **`layout` scripts** block + **`form_rich_assets.twig`** (CDN).
 - Index **column** types in **`Tables/Columns/`** (**`TextColumn`**, **`NumericColumn`**, **`BooleanColumn`**, **`DatetimeColumn`**, **`EmailColumn`**, **`UrlColumn`**, **`BadgeColumn`**) with Twig cell partials **`admin/resource/cells/`**; **`TableColumn`** is abstract.
