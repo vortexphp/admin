@@ -12,6 +12,7 @@ use Vortex\Http\Csrf;
 use Vortex\Http\Request;
 use Vortex\Http\Response;
 use Vortex\Http\Session;
+use Vortex\Support\UrlHelp;
 use Vortex\View\View;
 
 final class ResourceController extends Controller
@@ -23,11 +24,46 @@ final class ResourceController extends Controller
             return Response::make('Not found', 404);
         }
         $modelClass = $class::model();
-        /** @var list<Model> $rows */
-        $rows = $modelClass::all();
         $table = $class::table();
+        $query = $modelClass::query();
+        $queryString = Request::hasCurrent() ? Request::query() : [];
+        $filterValues = [];
+        foreach ($table->filters() as $filter) {
+            $param = $filter->queryParam();
+            $raw = $queryString[$param] ?? '';
+            if (is_array($raw)) {
+                continue;
+            }
+            $filterValues[$param] = is_string($raw) ? $raw : (string) $raw;
+            $filter->apply($query, $filterValues[$param]);
+        }
+
+        $page = 1;
+        if (isset($queryString['page'])) {
+            $p = $queryString['page'];
+            if (is_string($p) && ctype_digit($p)) {
+                $page = max(1, (int) $p);
+            }
+        }
+
+        $perPageResolution = self::resolveTablePerPage($class, $queryString);
+        $perPage = $perPageResolution['perPage'];
+        $perPageOptions = $perPageResolution['options'];
+
+        $paginator = $query->paginate($page, $perPage);
+        $listQuery = $filterValues;
+        if (count($perPageOptions) > 1) {
+            $listQuery['per_page'] = (string) $perPage;
+        }
+        $listPath = UrlHelp::withQuery(
+            route('admin.resource.index', ['slug' => $slug]),
+            $listQuery,
+        );
+        $paginator = $paginator->withBasePath($listPath, 'page');
 
         $records = [];
+        /** @var list<Model> $rows */
+        $rows = $paginator->items;
         foreach ($rows as $row) {
             $records[] = $this->rowPayload($row, $table);
         }
@@ -36,9 +72,53 @@ final class ResourceController extends Controller
             'title' => $class::pluralLabel(),
             'slug' => $slug,
             'tableColumns' => $table->columns(),
+            'tableFilters' => $table->filters(),
+            'filterValues' => $filterValues,
+            'perPageOptions' => $perPageOptions,
+            'tablePerPageCurrent' => $perPage,
+            'pagination' => $paginator,
             'records' => $records,
             'csrfToken' => Csrf::token(),
         ]);
+    }
+
+    /**
+     * @param class-string<\Vortex\Admin\Resource> $resourceClass
+     * @param array<string, string> $queryString
+     * @return array{perPage: int, options: list<int>}
+     */
+    private static function resolveTablePerPage(string $resourceClass, array $queryString): array
+    {
+        $opts = [];
+        foreach ($resourceClass::tablePerPageOptions() as $n) {
+            if (is_int($n)) {
+                $c = max(1, min(100, $n));
+                $opts[$c] = true;
+            }
+        }
+        /** @var list<int> $options */
+        $options = array_keys($opts);
+        sort($options);
+        if ($options === []) {
+            $options = [15];
+        }
+        $default = max(1, min(100, $resourceClass::tablePerPage()));
+        if (! in_array($default, $options, true)) {
+            $options[] = $default;
+            sort($options);
+        }
+        $perPage = $default;
+        if (isset($queryString['per_page'])) {
+            $pp = $queryString['per_page'];
+            if (is_string($pp) && ctype_digit($pp)) {
+                $v = max(1, min(100, (int) $pp));
+                if (in_array($v, $options, true)) {
+                    $perPage = $v;
+                }
+            }
+        }
+
+        return ['perPage' => $perPage, 'options' => $options];
     }
 
     public function create(string $slug): Response

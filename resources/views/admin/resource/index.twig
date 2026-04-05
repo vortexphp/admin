@@ -22,6 +22,43 @@
         <a href="{{ route('admin.resource.create', { slug: slug }) }}" class="vortex-admin__btn">Create</a>
     </div>
 
+    {% if tableFilters|length > 0 or perPageOptions|length > 1 %}
+        <form method="get" action="{{ route('admin.resource.index', { slug: slug }) }}" class="vortex-admin__filters">
+            {% for filter in tableFilters %}
+                <div class="vortex-admin__filter">
+                    <label class="vortex-admin__filter-label" for="adm_f_{{ attribute(filter, 'name') }}">{{ attribute(filter, 'label') }}</label>
+                    {% set fp = filter.queryParam %}
+                    {% if filter.inputKind == 'select' %}
+                        <select id="adm_f_{{ attribute(filter, 'name') }}" name="{{ fp }}" class="vortex-admin__filter-input">
+                            <option value="">— All —</option>
+                            {% for optVal, optLabel in filter.options %}
+                                <option value="{{ optVal }}" {% if attribute(filterValues, fp) == optVal %}selected{% endif %}>{{ optLabel }}</option>
+                            {% endfor %}
+                        </select>
+                    {% else %}
+                        <input id="adm_f_{{ attribute(filter, 'name') }}" type="text" name="{{ fp }}" value="{{ attribute(filterValues, fp)|default('') }}" class="vortex-admin__filter-input" autocomplete="off">
+                    {% endif %}
+                </div>
+            {% endfor %}
+            {% if perPageOptions|length > 1 %}
+                <div class="vortex-admin__filter">
+                    <label class="vortex-admin__filter-label" for="adm_per_page">Per page</label>
+                    <select id="adm_per_page" name="per_page" class="vortex-admin__filter-input" aria-label="Rows per page" onchange="this.form.submit()">
+                        {% for n in perPageOptions %}
+                            <option value="{{ n }}" {% if n == tablePerPageCurrent %}selected{% endif %}>{{ n }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            {% endif %}
+            {% if tableFilters|length > 0 %}
+                <div class="vortex-admin__filter-actions">
+                    <button type="submit" class="vortex-admin__btn">Apply</button>
+                    <a href="{{ route('admin.resource.index', { slug: slug }) }}" class="vortex-admin__btn vortex-admin__btn--ghost">Reset</a>
+                </div>
+            {% endif %}
+        </form>
+    {% endif %}
+
     <div class="vortex-admin__tablewrap">
         <table class="vortex-admin__table">
             <thead>
@@ -52,6 +89,18 @@
             </tbody>
         </table>
     </div>
+
+    {% if pagination.hasPages %}
+        <nav class="vortex-admin__pagination" aria-label="Pagination">
+            {% if not pagination.onFirstPage %}
+                <a href="{{ pagination.urlForPage(pagination.page - 1) }}" class="vortex-admin__btn vortex-admin__btn--ghost">Previous</a>
+            {% endif %}
+            <span class="vortex-admin__pagination-meta">Page {{ pagination.page }} of {{ pagination.last_page }} — {{ pagination.total }} total</span>
+            {% if not pagination.onLastPage %}
+                <a href="{{ pagination.urlForPage(pagination.page + 1) }}" class="vortex-admin__btn vortex-admin__btn--ghost">Next</a>
+            {% endif %}
+        </nav>
+    {% endif %}
 </main>
 </body>
 </html>

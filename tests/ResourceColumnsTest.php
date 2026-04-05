@@ -31,6 +31,17 @@ final class ResourceColumnsTest extends TestCase
         self::assertSame(['id', 'name'], $table->columnNames());
         self::assertSame(['name'], UserLikeResource::form()->fieldNames());
     }
+
+    public function testTablePerPageFromResource(): void
+    {
+        self::assertSame(15, DemoResource::tablePerPage());
+        self::assertSame(7, TinyPageDemoResource::tablePerPage());
+    }
+
+    public function testTablePerPageOptionsDefault(): void
+    {
+        self::assertSame([10, 15, 25, 50], DemoResource::tablePerPageOptions());
+    }
 }
 
 final class DemoModel extends Model
@@ -72,6 +83,34 @@ final class UserLikeModel extends Model
 {
     /** @var list<string> */
     protected static array $fillable = ['name', 'password', 'remember_token'];
+}
+
+final class TinyPageDemoResource extends Resource
+{
+    public static function model(): string
+    {
+        return DemoModel::class;
+    }
+
+    public static function slug(): string
+    {
+        return 'tiny';
+    }
+
+    public static function table(): Table
+    {
+        return Table::make(TableColumn::make('id'));
+    }
+
+    public static function tablePerPage(): int
+    {
+        return 7;
+    }
+
+    public static function form(): Form
+    {
+        return Form::make(TextField::make('title'));
+    }
 }
 
 final class UserLikeResource extends Resource

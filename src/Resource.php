@@ -47,6 +47,26 @@ abstract class Resource
     abstract public static function table(): Table;
 
     /**
+     * Rows per admin index page when {@code per_page} is absent or invalid in the query string.
+     * If this value is missing from {@see tablePerPageOptions()}, it is added automatically.
+     */
+    public static function tablePerPage(): int
+    {
+        return 15;
+    }
+
+    /**
+     * Allowed “per page” values for the index UI and {@code per_page} query param (each bound {@code 1…100}).
+     * A single value hides the selector; two or more show a dropdown.
+     *
+     * @return list<int>
+     */
+    public static function tablePerPageOptions(): array
+    {
+        return [10, 15, 25, 50];
+    }
+
+    /**
      * Create / edit form: use {@see Form} and concrete fields ({@see \Vortex\Admin\Forms\TextField}, {@see \Vortex\Admin\Forms\TextareaField}, …).
      */
     abstract public static function form(): Form;

@@ -62,6 +62,7 @@ use Vortex\Admin\Forms\TextField;
 use Vortex\Admin\Resource;
 use Vortex\Admin\Tables\Table;
 use Vortex\Admin\Tables\TableColumn;
+use Vortex\Admin\Tables\TextFilter;
 
 final class PostResource extends Resource
 {
@@ -75,12 +76,27 @@ final class PostResource extends Resource
         return 'posts'; // /admin/posts
     }
 
+    public static function tablePerPage(): int
+    {
+        return 25;
+    }
+
+    /**
+     * @return list<int>
+     */
+    public static function tablePerPageOptions(): array
+    {
+        return [25, 50, 100];
+    }
+
     public static function table(): Table
     {
         return Table::make(
             TableColumn::make('id'),
             TableColumn::make('title'),
             TableColumn::make('created_at', 'Created'),
+        )->withFilters(
+            TextFilter::make('title', 'Title'),
         );
     }
 
@@ -116,6 +132,8 @@ Forms include **`_csrf`**; invalid CSRF redirects back without flash error (hard
 
 - **`Table::make(TableColumn::make('attr', 'Optional label'), ...)`** — column order; omit the second argument for an auto label from the attribute name (`created_at` → `Created At`).
 - **`TableColumn::make('name')->label('Override')`** — fluent label override.
+- **Filters** (optional): chain **`->withFilters(TextFilter::make('title', 'Contains'), SelectFilter::make('status', ['draft' => 'Draft'], 'Status'), ...)`**. Index uses GET query keys **`f_{column}`** (e.g. **`f_title`**). **`TextFilter`** uses **`LIKE %…%`** (wildcards in the value are escaped). **`SelectFilter`** whitelists values against its options map.
+- **Pagination**: index uses **`QueryBuilder::paginate()`** with query **`page`**. Override **`tablePerPage(): int`** for the default page size when **`per_page`** is missing or invalid (clamped **`1…100`**). Override **`tablePerPageOptions(): array`** (list of ints) for the “Per page” dropdown; **one** value hides the control; if **`tablePerPage()`** is not in that list, it is merged in. Page links preserve **`per_page`** and filter query params when multiple sizes exist.
 
 **Form API** (same idea as the table)
 
