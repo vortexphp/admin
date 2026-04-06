@@ -107,53 +107,59 @@ return [
     // 'discover' => ['app/Admin/Resources', 'src/More/AdminResources'],
     // Absolute paths are allowed when needed.
 
-    // Optional: custom GET screens (registered before resource /admin/{slug}; see AdminPageRegistry).
+    // Scan app/Admin/Pages/*.php for AdminPage subclasses (same idea as resources).
+    'page_discover' => true,
+
+    // Optional: page classes when discovery is off or for extras (first registration wins on slug)
     'pages' => [
-        // [
-        //     'id' => 'reports',
-        //     'path' => '/admin/reports',
-        //     'name' => 'admin.reports.index',
-        //     'action' => [App\Http\Admin\ReportsController::class, 'index'],
-        //     'label' => 'Reports',
-        //     'icon' => 'document', // optional: admin/partials/icon_svg.twig name
-        //     'routeParams' => [], // optional: passed to route() in the sidebar
-        // ],
+        // App\Admin\Pages\ReportsPage::class,
     ],
 ];
 ```
 
-### Custom admin pages (`admin.pages`)
+### Custom admin pages (`AdminPage`)
 
-Use **`admin.pages`** for non-resource screens that should appear in the sidebar under **Pages** (with the built-in table showcase). **`AdminPackage`** registers each route **before** **`/admin/{slug}`**, so paths like **`/admin/reports`** are not treated as a resource slug.
-
-1. Add entries to **`config/admin.php`** as in the snippet above (`id`, `path`, `name`, `action`, `label`; optional `icon`, `routeParams`).
-2. Implement a controller that extends **`Vortex\Admin\Http\AdminHttpController`** (layout + sidebar).
-3. In **`adminView(...)`**, pass **`'adminPage' => 'reports'`** (same string as **`id`**) so the sidebar highlights the active item.
+Custom screens use class-based **`Vortex\Admin\AdminPage`** (like **`Resource`**): **`slug()`**, **`view()`**, optional **`title()`**, **`description()`**, **`navigationIcon()`**, **`showInNavigation()`**, **`routeName()`**. They register **`GET /admin/{slug}`** before resource routes. A page **slug** must not match a **`Resource::slug()`** you rely on (the resource is omitted from the registry when the slug collides).
 
 ```php
 <?php
 
 declare(strict_types=1);
 
-namespace App\Http\Admin;
+namespace App\Admin\Pages;
 
-use Vortex\Admin\Http\AdminHttpController;
-use Vortex\Admin\Navigation;
-use Vortex\Http\Response;
+use Vortex\Admin\AdminPage;
 
-final class ReportsController extends AdminHttpController
+final class ReportsPage extends AdminPage
 {
-    public function index(): Response
+    public static function slug(): string
     {
-        return $this->adminView('admin.reports', [
-            'title' => 'Reports',
-            'adminPage' => 'reports',
-        ]);
+        return 'reports';
+    }
+
+    public static function view(): string
+    {
+        return 'admin.pages.reports';
+    }
+
+    public static function title(): string
+    {
+        return 'Reports';
+    }
+
+    public static function description(): string
+    {
+        return 'Optional subtitle shown under the heading and as the sidebar link tooltip.';
+    }
+
+    public static function navigationIcon(): ?string
+    {
+        return 'document';
     }
 }
 ```
 
-Avoid **`path`** values that match a resource index URL (same as a resource **`slug`**) or your custom route may never run.
+Twig lives at **`resources/views/admin/pages/reports.twig`** (for **`admin.pages.reports`**). **`adminPage`** in the view data equals **`slug()`** for sidebar highlighting.
 
 2. Scaffold a resource from a model (uses **`$fillable`** + **`$casts`** for column/field types):
 
@@ -163,13 +169,13 @@ php vortex make:admin-resource Post [--slug=posts] [--force]
 
 Writes **`app/Admin/Resources/PostResource.php`**. Register it under **`admin.resources`** in **`config/admin.php`** (or rely on **`discover`**). The model must have a non-empty **`$fillable`**.
 
-Custom **Pages** (sidebar **`admin.pages`**) can be scaffolded with:
+Scaffold a page:
 
 ```bash
-php vortex make:admin-page Reports [--id=reports] [--path=/admin/reports] [--label=Reports] [--icon=document] [--no-register] [--no-view] [--force]
+php vortex make:admin-page Reports [--slug=reports] [--label=…] [--description=…] [--icon=document] [--hidden] [--no-view] [--force]
 ```
 
-Creates **`app/Http/Admin/ReportsController.php`**, **`resources/views/admin/pages/reports.twig`**, and tries to append a **`pages`** entry in **`config/admin.php`** (otherwise prints the snippet).
+Creates **`app/Admin/Pages/ReportsPage.php`** and **`resources/views/admin/pages/reports.twig`**. With **`page_discover` => true**, no config line is required; otherwise add the class to **`pages`**.
 
 3. Implement a resource class extending **`Vortex\Admin\Resource`** (or adjust generated output):
 

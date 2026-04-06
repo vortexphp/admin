@@ -1,0 +1,21 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{NAMESPACE}};
+
+use Vortex\Admin\AdminPage;
+
+final class {{PAGE_CLASS}} extends AdminPage
+{
+    public static function slug(): string
+    {
+        return '{{SLUG}}';
+    }
+
+    public static function view(): string
+    {
+        return '{{VIEW_NAME}}';
+    }
+{{OPTIONAL_BLOCKS}}
+}

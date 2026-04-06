@@ -4,48 +4,96 @@ declare(strict_types=1);
 
 namespace Vortex\Admin;
 
+use ReflectionClass;
+use Vortex\AppContext;
+use Vortex\Admin\Http\AdminPageController;
 use Vortex\Config\Repository;
+use Vortex\Http\Response;
 use Vortex\Routing\Route;
 
 /**
- * Optional custom admin screens from {@code config/admin.php} key {@code pages} (GET routes + sidebar rows).
- * Register routes in {@see AdminPackage::boot()} before {@code /admin/{slug}} so paths are not captured as resource slugs.
+ * Maps admin page slugs to {@see AdminPage} classes from {@code admin.pages} plus {@see PageDiscovery}.
  *
- * Controllers should extend {@see Http\AdminHttpController} and pass {@code adminPage} (same string as {@code id}) to
- * {@see Http\AdminHttpController::adminView()} for sidebar highlighting.
+ * Registers literal {@code GET /admin/{slug}} routes before resource {@code /admin/{slug}}.
  */
 final class AdminPageRegistry
 {
-    /** @var list<array<string, mixed>>|null */
-    private static ?array $configPagesCache = null;
+    /** @var array<string, class-string<AdminPage>>|null */
+    private static ?array $map = null;
 
     public static function forget(): void
     {
-        self::$configPagesCache = null;
+        self::$map = null;
+    }
+
+    /**
+     * @return array<string, class-string<AdminPage>>
+     */
+    public static function slugToClass(): array
+    {
+        if (self::$map !== null) {
+            return self::$map;
+        }
+
+        $out = [];
+
+        /** @var mixed $raw */
+        $raw = Repository::get('admin.pages', []);
+        if (is_array($raw)) {
+            foreach ($raw as $class) {
+                self::tryRegister($out, $class);
+            }
+        }
+
+        foreach (PageDiscovery::classes() as $class) {
+            self::tryRegister($out, $class);
+        }
+
+        return self::$map = $out;
+    }
+
+    /**
+     * @return class-string<AdminPage>|null
+     */
+    public static function classForSlug(string $slug): ?string
+    {
+        return self::slugToClass()[$slug] ?? null;
     }
 
     public static function registerRoutes(): void
     {
-        foreach (self::configPages() as $p) {
-            Route::get($p['path'], $p['action'])->name($p['name']);
+        foreach (self::slugToClass() as $slug => $class) {
+            if (! self::isValidUrlSlug($slug)) {
+                continue;
+            }
+            $path = '/admin/' . $slug;
+            Route::get($path, static function () use ($class): Response {
+                /** @var class-string<AdminPage> $class */
+                return AppContext::container()->make(AdminPageController::class)->render($class);
+            })->name($class::routeName());
         }
     }
 
     /**
-     * Sidebar rows: application {@code pages} first, then package defaults (e.g. table showcase).
+     * Sidebar rows for pages that {@see AdminPage::showInNavigation()} (order matches registry), then package defaults (table showcase).
      *
-     * @return list<array{id: string, label: string, route: string, routeParams: array<string, string|int>, navIcon: string|null}>
+     * @return list<array{slug: string, label: string, description: string, route: string, routeParams: array<string, string|int>, navIcon: string|null}>
      */
     public static function sidebarEntries(): array
     {
         $rows = [];
-        foreach (self::configPages() as $p) {
+        foreach (self::slugToClass() as $slug => $class) {
+            if (! $class::showInNavigation()) {
+                continue;
+            }
+            $icon = $class::navigationIcon();
             $rows[] = [
-                'id' => $p['id'],
-                'label' => $p['label'],
-                'route' => $p['name'],
-                'routeParams' => $p['routeParams'] ?? [],
-                'navIcon' => $p['icon'] ?? null,
+                'slug' => $slug,
+                'label' => $class::title(),
+                'description' => $class::description(),
+                'route' => $class::routeName(),
+                'routeParams' => [],
+                'navIcon' => is_string($icon) && $icon !== '' ? $icon : null,
             ];
         }
 
@@ -53,14 +101,15 @@ final class AdminPageRegistry
     }
 
     /**
-     * @return list<array{id: string, label: string, route: string, routeParams: array<string, string|int>, navIcon: string|null}>
+     * @return list<array{slug: string, label: string, description: string, route: string, routeParams: array<string, string|int>, navIcon: string|null}>
      */
     private static function packageSidebarEntries(): array
     {
         return [
             [
-                'id' => 'showcase-tables',
+                'slug' => 'showcase-tables',
                 'label' => 'Table showcase',
+                'description' => '',
                 'route' => 'admin.showcase.tables',
                 'routeParams' => [],
                 'navIcon' => 'table',
@@ -69,101 +118,30 @@ final class AdminPageRegistry
     }
 
     /**
-     * @return list<array<string, mixed>>
+     * @param array<string, class-string<AdminPage>> $out
      */
-    private static function configPages(): array
+    private static function tryRegister(array &$out, mixed $class): void
     {
-        if (self::$configPagesCache !== null) {
-            return self::$configPagesCache;
+        if (! is_string($class) || $class === '' || ! class_exists($class)) {
+            return;
+        }
+        if (! is_subclass_of($class, AdminPage::class)) {
+            return;
+        }
+        if ((new ReflectionClass($class))->isAbstract()) {
+            return;
         }
 
-        /** @var mixed $raw */
-        $raw = Repository::get('admin.pages', []);
-        if (! is_array($raw) || $raw === []) {
-            return self::$configPagesCache = [];
+        $slug = $class::slug();
+        if ($slug === '' || isset($out[$slug]) || ! self::isValidUrlSlug($slug)) {
+            return;
         }
 
-        $out = [];
-        foreach ($raw as $row) {
-            if (! is_array($row)) {
-                continue;
-            }
-            $id = isset($row['id']) && is_string($row['id']) ? trim($row['id']) : '';
-            $path = isset($row['path']) && is_string($row['path']) ? trim($row['path']) : '';
-            $name = isset($row['name']) && is_string($row['name']) ? trim($row['name']) : '';
-            $label = isset($row['label']) && is_string($row['label']) ? trim($row['label']) : '';
-            if ($id === '' || $path === '' || $name === '' || $label === '') {
-                continue;
-            }
-            if (! self::isSafeAdminPath($path)) {
-                continue;
-            }
-            $action = self::normalizeAction($row['action'] ?? null);
-            if ($action === null) {
-                continue;
-            }
-            $icon = isset($row['icon']) && is_string($row['icon']) && $row['icon'] !== '' ? $row['icon'] : null;
-            /** @var array<string, string|int> $routeParams */
-            $routeParams = [];
-            if (isset($row['routeParams']) && is_array($row['routeParams'])) {
-                foreach ($row['routeParams'] as $k => $v) {
-                    if (! is_string($k) || $k === '') {
-                        continue;
-                    }
-                    if (is_string($v) || is_int($v)) {
-                        $routeParams[$k] = $v;
-                    }
-                }
-            }
-            $out[] = [
-                'id' => $id,
-                'path' => $path,
-                'name' => $name,
-                'action' => $action,
-                'label' => $label,
-                'icon' => $icon,
-                'routeParams' => $routeParams,
-            ];
-        }
-
-        return self::$configPagesCache = $out;
+        $out[$slug] = $class;
     }
 
-    private static function isSafeAdminPath(string $path): bool
+    private static function isValidUrlSlug(string $slug): bool
     {
-        if (str_contains($path, '..')) {
-            return false;
-        }
-        if (! str_starts_with($path, '/admin/')) {
-            return false;
-        }
-        if ($path === '/admin/' || strlen($path) < 8) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
-     * @return array{0: class-string, 1: string}|null
-     */
-    private static function normalizeAction(mixed $action): ?array
-    {
-        if (is_string($action) && $action !== '' && class_exists($action)) {
-            return [$action, '__invoke'];
-        }
-        if (! is_array($action) || count($action) !== 2) {
-            return null;
-        }
-        $c = $action[0] ?? null;
-        $m = $action[1] ?? null;
-        if (! is_string($c) || ! is_string($m) || $c === '' || $m === '' || ! class_exists($c)) {
-            return null;
-        }
-        if (! method_exists($c, $m)) {
-            return null;
-        }
-
-        return [$c, $m];
+        return $slug !== '' && preg_match('/^[a-z0-9]+(?:-[a-z0-9]+)*$/', $slug) === 1;
     }
 }

@@ -98,6 +98,9 @@ final class ResourceRegistry
         if ($slug === '' || isset($out[$slug])) {
             return;
         }
+        if (AdminPageRegistry::classForSlug($slug) !== null) {
+            return;
+        }
 
         $modelClass = $class::model();
         if (! is_subclass_of($modelClass, Model::class)) {

@@ -13,9 +13,9 @@
             <p class="mb-1.5 px-3 text-[0.65rem] font-semibold uppercase tracking-wider text-zinc-500">Pages</p>
             <div class="space-y-0.5">
                 {% for p in adminSidebarPages %}
-                    {% set adm_page_active = adminPage is defined and adminPage == p.id %}
+                    {% set adm_page_active = adminPage is defined and adminPage == p.slug %}
                     {% set adm_page_icon = adm_page_active ? 'h-5 w-5 shrink-0 text-zinc-300' : 'h-5 w-5 shrink-0 text-zinc-500' %}
-                    <a href="{{ route(p.route, p.routeParams|default({})) }}" class="flex items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-colors {% if adm_page_active %}bg-zinc-800/80 text-zinc-50{% else %}text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100{% endif %}">
+                    <a href="{{ route(p.route, p.routeParams|default({})) }}" class="flex items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-colors {% if adm_page_active %}bg-zinc-800/80 text-zinc-50{% else %}text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100{% endif %}"{% if p.description is defined and p.description != '' %} title="{{ p.description|e('html_attr') }}"{% endif %}>
                         {% if p.navIcon is defined and p.navIcon %}
                             {{ icons.r(p.navIcon, adm_page_icon) }}
                         {% else %}

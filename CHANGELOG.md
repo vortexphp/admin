@@ -6,11 +6,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Changed
+
+- **Breaking: admin pages** — **`config/admin.php`** **`pages`** is now a **list of `AdminPage` class names** (like **`resources`**). **`page_discover`** (default **`true`**) scans **`app/Admin/Pages`** via **`PageDiscovery`**. Old **`pages`** rows (`id`, **`path`**, **`action`**, …) and app HTTP controllers for those routes are removed; use **`AdminPage`** + Twig instead. **`ResourceRegistry`** skips a resource when an **`AdminPage`** already uses the same **slug**.
+- **Navigation**: Pages sidebar rows use **`slug`** (not **`id`**); optional **`description`** is the link **`title`** and header subheading via **`pageDescription`**.
+
 ### Added
 
 - **`make:admin-resource`** CLI (**`MakeAdminResourceCommand`**, registered in **`AdminPackage::console()`**): scaffold **`App\Admin\Resources\{Model}Resource`** from **`App\Models\{Model}`** (or an FQCN) using **`$fillable`** + **`$casts`**; **`--slug`**, **`--force`**. Internals: **`Codegen\ModelInspector`**, **`Codegen\ResourceScaffolder`**, stub **`resources/stubs/admin_resource.stub`**.
-- **`make:admin-page`** CLI (**`MakeAdminPageCommand`**): **`App\Http\Admin\{Name}Controller`**, Twig under **`resources/views/admin/pages/`**, merges **`admin.pages`** config when possible (**`Codegen\AdminPageConfigMerger`**); **`--id`**, **`--path`**, **`--route-name`**, **`--label`**, **`--icon`**, **`--no-view`**, register **`--no-register`**, **`--force`**.
-- **`admin.pages`** + **`AdminPageRegistry`**: register custom GET admin routes from config (before **`/admin/{slug}`**); sidebar section **Pages** lists app pages then package **Table showcase**; pass **`adminPage`** from **`AdminHttpController::adminView()`** for active state.
+- **`make:admin-page`** CLI: scaffold **`App\Admin\Pages\{Name}Page`**, Twig under **`resources/views/admin/pages/`**; **`--slug`**, **`--label`**, **`--description`**, **`--icon`**, **`--hidden`**, **`--no-view`**, **`--force`**.
+- **`AdminPage`**, **`AdminPageController`**, **`PageDiscovery`**, **`AdminPageRegistry`** (class registry + routes + sidebar; table showcase still appended after app pages).
 - **Table showcase**: `GET /admin/showcase/tables` (`admin.showcase.tables`), **ShowcaseController**, **ShowcaseTableData** (demo rows + in-memory filters for `Table::records()`), **`LinkRowAction`** (named-route link row action), **`GlobalSearchFilter::searchColumns()`**, shared Twig **`admin/partials/resource_index_table.twig`** + **`tableListUrl`** on resource index.
 - **`Table::records(callable)`**: index rows from a callback (list or id-keyed map); in-memory sort and pagination; SQL filters / global search are not applied. **`CustomTableRecords`**, **`ArrayIndexPaginator`**. **`TableColumn::resolveRowValue()`** accepts arrays for static rows (including **`BelongsToColumn`** / **`BelongsToImageColumn`** via keyed values).
 - **`ModalRowAction`**: index row action **`modal`** opens **`AdmModal`** / **`admin.modal.js`**. **`content.type`** is **`form`** (field specs or trusted inner HTML + POST), **`html`** (trusted markup, optional footer), or **`include`** (Twig partial + **`with`** context). Assets: **`admin.modal.js`**, **`modal_shell.twig`**, **`modal_row_content.twig`**, **`modal_form_fields.twig`**.

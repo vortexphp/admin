@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Vortex\Admin\Tests;
 
 use PHPUnit\Framework\TestCase;
+use Vortex\Admin\AdminPage;
+use Vortex\Admin\AdminPageRegistry;
 use Vortex\Admin\Forms\Form;
 use Vortex\Admin\Forms\TextField;
 use Vortex\Admin\Resource;
@@ -26,6 +28,7 @@ final class ResourceRegistryTest extends TestCase
         );
         Repository::setInstance(new Repository($base . '/config'));
         ResourceRegistry::forget();
+        AdminPageRegistry::forget();
         try {
             $map = ResourceRegistry::slugToClass();
             self::assertSame(['stub-notes' => StubNoteResource::class], $map);
@@ -38,6 +41,31 @@ final class ResourceRegistryTest extends TestCase
         } finally {
             Repository::forgetInstance();
             ResourceRegistry::forget();
+            AdminPageRegistry::forget();
+        }
+    }
+
+    public function testResourceIsOmittedWhenAdminPageUsesSameSlug(): void
+    {
+        $base = sys_get_temp_dir() . '/vortex_admclash_' . bin2hex(random_bytes(3));
+        mkdir($base . '/config', 0777, true);
+        file_put_contents(
+            $base . '/config/admin.php',
+            "<?php\n\nreturn " . var_export([
+                'page_discover' => false,
+                'pages' => [StubCollisionAdminPage::class],
+                'resources' => [StubNoteResource::class],
+            ], true) . ";\n",
+        );
+        Repository::setInstance(new Repository($base . '/config'));
+        ResourceRegistry::forget();
+        AdminPageRegistry::forget();
+        try {
+            self::assertSame([], ResourceRegistry::slugToClass());
+        } finally {
+            Repository::forgetInstance();
+            ResourceRegistry::forget();
+            AdminPageRegistry::forget();
         }
     }
 
@@ -51,6 +79,7 @@ final class ResourceRegistryTest extends TestCase
         );
         Repository::setInstance(new Repository($base . '/config'));
         ResourceRegistry::forget();
+        AdminPageRegistry::forget();
         try {
             self::assertArrayHasKey('stub-hidden', ResourceRegistry::slugToClass());
             $nav = ResourceRegistry::navigationSidebarEntries();
@@ -59,6 +88,7 @@ final class ResourceRegistryTest extends TestCase
         } finally {
             Repository::forgetInstance();
             ResourceRegistry::forget();
+            AdminPageRegistry::forget();
         }
     }
 }
@@ -97,6 +127,19 @@ final class StubNoteResource extends Resource
     public static function navigationIcon(): ?string
     {
         return 'folder';
+    }
+}
+
+final class StubCollisionAdminPage extends AdminPage
+{
+    public static function slug(): string
+    {
+        return 'stub-notes';
+    }
+
+    public static function view(): string
+    {
+        return 'admin.dashboard';
     }
 }
 
