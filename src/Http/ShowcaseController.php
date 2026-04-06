@@ -154,6 +154,7 @@ final class ShowcaseController extends AdminHttpController
 
         return $this->adminView('admin.showcase.tables', [
             'title' => 'Table showcase',
+            'adminPage' => self::SLUG,
             'slug' => $slug,
             'tableListUrl' => $tableListUrl,
             'tableColumns' => $tableColumnsView,

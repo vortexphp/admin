@@ -1,11 +1,32 @@
 {% import 'admin/partials/icon_svg.twig' as icons %}
+{% set adm_nav_overview_active = adminPage is not defined and slug is not defined %}
 <div class="space-y-6">
     <div class="space-y-0.5">
-        <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-colors {% if slug is not defined %}bg-zinc-800/80 text-zinc-50{% else %}text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100{% endif %}">
-            {{ icons.r('home', slug is not defined ? 'h-5 w-5 shrink-0 text-zinc-300' : 'h-5 w-5 shrink-0 text-zinc-500') }}
+        <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-colors {% if adm_nav_overview_active %}bg-zinc-800/80 text-zinc-50{% else %}text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100{% endif %}">
+            {{ icons.r('home', adm_nav_overview_active ? 'h-5 w-5 shrink-0 text-zinc-300' : 'h-5 w-5 shrink-0 text-zinc-500') }}
             <span>Overview</span>
         </a>
     </div>
+
+    {% if adminSidebarPages is defined and adminSidebarPages is not empty %}
+        <div>
+            <p class="mb-1.5 px-3 text-[0.65rem] font-semibold uppercase tracking-wider text-zinc-500">Pages</p>
+            <div class="space-y-0.5">
+                {% for p in adminSidebarPages %}
+                    {% set adm_page_active = adminPage is defined and adminPage == p.id %}
+                    {% set adm_page_icon = adm_page_active ? 'h-5 w-5 shrink-0 text-zinc-300' : 'h-5 w-5 shrink-0 text-zinc-500' %}
+                    <a href="{{ route(p.route, p.routeParams|default({})) }}" class="flex items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-colors {% if adm_page_active %}bg-zinc-800/80 text-zinc-50{% else %}text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100{% endif %}">
+                        {% if p.navIcon is defined and p.navIcon %}
+                            {{ icons.r(p.navIcon, adm_page_icon) }}
+                        {% else %}
+                            {{ icons.r('document', adm_page_icon) }}
+                        {% endif %}
+                        <span>{{ p.label }}</span>
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+    {% endif %}
 
     {% if adminSidebarResources is not empty %}
         <div>

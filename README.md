@@ -106,10 +106,64 @@ return [
     // Instead of or in addition to true, use path(s) relative to the project root:
     // 'discover' => ['app/Admin/Resources', 'src/More/AdminResources'],
     // Absolute paths are allowed when needed.
+
+    // Optional: custom GET screens (registered before resource /admin/{slug}; see AdminPageRegistry).
+    'pages' => [
+        // [
+        //     'id' => 'reports',
+        //     'path' => '/admin/reports',
+        //     'name' => 'admin.reports.index',
+        //     'action' => [App\Http\Admin\ReportsController::class, 'index'],
+        //     'label' => 'Reports',
+        //     'icon' => 'document', // optional: admin/partials/icon_svg.twig name
+        //     'routeParams' => [], // optional: passed to route() in the sidebar
+        // ],
+    ],
 ];
 ```
 
-2. Implement a resource class extending **`Vortex\Admin\Resource`**:
+### Custom admin pages (`admin.pages`)
+
+Use **`admin.pages`** for non-resource screens that should appear in the sidebar under **Pages** (with the built-in table showcase). **`AdminPackage`** registers each route **before** **`/admin/{slug}`**, so paths like **`/admin/reports`** are not treated as a resource slug.
+
+1. Add entries to **`config/admin.php`** as in the snippet above (`id`, `path`, `name`, `action`, `label`; optional `icon`, `routeParams`).
+2. Implement a controller that extends **`Vortex\Admin\Http\AdminHttpController`** (layout + sidebar).
+3. In **`adminView(...)`**, pass **`'adminPage' => 'reports'`** (same string as **`id`**) so the sidebar highlights the active item.
+
+```php
+<?php
+
+declare(strict_types=1);
+
+namespace App\Http\Admin;
+
+use Vortex\Admin\Http\AdminHttpController;
+use Vortex\Admin\Navigation;
+use Vortex\Http\Response;
+
+final class ReportsController extends AdminHttpController
+{
+    public function index(): Response
+    {
+        return $this->adminView('admin.reports', [
+            'title' => 'Reports',
+            'adminPage' => 'reports',
+        ]);
+    }
+}
+```
+
+Avoid **`path`** values that match a resource index URL (same as a resource **`slug`**) or your custom route may never run.
+
+2. Scaffold a resource from a model (uses **`$fillable`** + **`$casts`** for column/field types):
+
+```bash
+php vortex make:admin-resource Post [--slug=posts] [--force]
+```
+
+Writes **`app/Admin/Resources/PostResource.php`**. Register it under **`admin.resources`** in **`config/admin.php`** (or rely on **`discover`**). The model must have a non-empty **`$fillable`**.
+
+3. Implement a resource class extending **`Vortex\Admin\Resource`** (or adjust generated output):
 
 ```php
 <?php
@@ -176,7 +230,7 @@ final class PostResource extends Resource
 }
 ```
 
-3. Your **`Model`** should list assignable attributes in **`$fillable`** to match what you persist from **`form()`** (and avoid mass-assignment surprises).
+4. Your **`Model`** should list assignable attributes in **`$fillable`** to match what you persist from **`form()`** (and avoid mass-assignment surprises).
 
 **Routes** (registered by **`AdminPackage`**):
 

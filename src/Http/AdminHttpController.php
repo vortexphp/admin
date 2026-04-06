@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Vortex\Admin\Http;
 
+use Vortex\Admin\AdminPageRegistry;
 use Vortex\Admin\Navigation;
 use Vortex\Admin\ResourceRegistry;
 use Vortex\Http\Controller;
@@ -27,6 +28,7 @@ abstract class AdminHttpController extends Controller
         return View::html($name, array_merge($data, [
             'adminNavigation' => $this->navigation->toViewArray(),
             'adminSidebarResources' => $sidebarResources,
+            'adminSidebarPages' => AdminPageRegistry::sidebarEntries(),
         ]), $status);
     }
 }

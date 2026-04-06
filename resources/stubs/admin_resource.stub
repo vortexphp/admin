@@ -1,0 +1,35 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{NAMESPACE}};
+
+{{USE_STATEMENTS}}
+
+final class {{RESOURCE_CLASS}} extends Resource
+{
+    public static function model(): string
+    {
+        return {{MODEL_CLASS_SHORT}}::class;
+    }
+
+    public static function slug(): string
+    {
+        return '{{SLUG}}';
+    }
+
+    public static function table(): Table
+    {
+        return Table::make(
+{{TABLE_COLUMNS}}
+        );
+    }
+
+    public static function form(): Form
+    {
+        return Form::make(
+{{FORM_FIELDS}}
+        );
+    }
+{{DEFAULT_SORT}}
+}

@@ -14,7 +14,9 @@ use Vortex\Admin\Widgets\NoticeTone;
 use Vortex\Admin\Widgets\NoticeWidget;
 use Vortex\Admin\Widgets\ResourceLinksWidget;
 use Vortex\Admin\Widgets\TextWidget;
+use Vortex\Admin\Console\MakeAdminResourceCommand;
 use Vortex\Container;
+use Vortex\Console\ConsoleApplication;
 use Vortex\Package\Package;
 use Vortex\Package\PackageRegistry;
 use Vortex\Routing\Route;
@@ -58,17 +60,18 @@ final class AdminPackage extends Package
 
         Route::get('/admin/showcase/tables', [ShowcaseController::class, 'tables'])->name('admin.showcase.tables');
 
+        AdminPageRegistry::registerRoutes();
+
         Route::get('/admin/{slug}/create', [ResourceController::class, 'create'])->name('admin.resource.create');
         Route::post('/admin/{slug}', [ResourceController::class, 'store'])->name('admin.resource.store');
         Route::get('/admin/{slug}/{id}/edit', [ResourceController::class, 'edit'])->name('admin.resource.edit');
         Route::post('/admin/{slug}/{id}/delete', [ResourceController::class, 'destroy'])->name('admin.resource.destroy');
         Route::post('/admin/{slug}/{id}', [ResourceController::class, 'update'])->name('admin.resource.update');
         Route::get('/admin/{slug}', [ResourceController::class, 'index'])->name('admin.resource.index');
+    }
 
-        $container->make(Navigation::class)->link(
-            'Table showcase',
-            route('admin.showcase.tables'),
-            'table',
-        );
+    public function console(ConsoleApplication $app, string $basePath): void
+    {
+        $app->register(new MakeAdminResourceCommand());
     }
 }
