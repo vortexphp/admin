@@ -163,6 +163,14 @@ php vortex make:admin-resource Post [--slug=posts] [--force]
 
 Writes **`app/Admin/Resources/PostResource.php`**. Register it under **`admin.resources`** in **`config/admin.php`** (or rely on **`discover`**). The model must have a non-empty **`$fillable`**.
 
+Custom **Pages** (sidebar **`admin.pages`**) can be scaffolded with:
+
+```bash
+php vortex make:admin-page Reports [--id=reports] [--path=/admin/reports] [--label=Reports] [--icon=document] [--no-register] [--no-view] [--force]
+```
+
+Creates **`app/Http/Admin/ReportsController.php`**, **`resources/views/admin/pages/reports.twig`**, and tries to append a **`pages`** entry in **`config/admin.php`** (otherwise prints the snippet).
+
 3. Implement a resource class extending **`Vortex\Admin\Resource`** (or adjust generated output):
 
 ```php

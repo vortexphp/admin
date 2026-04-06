@@ -1,0 +1,19 @@
+<?php
+
+declare(strict_types=1);
+
+namespace {{NAMESPACE}};
+
+use Vortex\Admin\Http\AdminHttpController;
+use Vortex\Http\Response;
+
+final class {{CONTROLLER_CLASS}} extends AdminHttpController
+{
+    public function index(): Response
+    {
+        return $this->adminView('{{VIEW_NAME}}', [
+            'title' => {{TITLE_PHP}},
+            'adminPage' => '{{PAGE_ID}}',
+        ]);
+    }
+}

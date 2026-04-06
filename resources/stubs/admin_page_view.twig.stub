@@ -1,0 +1,9 @@
+{% extends 'admin/layout.twig' %}
+
+{% block doc_title %}{{ title }} — Admin{% endblock %}
+
+{% block heading %}{{ title }}{% endblock %}
+
+{% block body %}
+<p class="text-sm text-zinc-400">{{BODY_HINT}}</p>
+{% endblock %}

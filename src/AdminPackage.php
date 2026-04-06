@@ -14,6 +14,7 @@ use Vortex\Admin\Widgets\NoticeTone;
 use Vortex\Admin\Widgets\NoticeWidget;
 use Vortex\Admin\Widgets\ResourceLinksWidget;
 use Vortex\Admin\Widgets\TextWidget;
+use Vortex\Admin\Console\MakeAdminPageCommand;
 use Vortex\Admin\Console\MakeAdminResourceCommand;
 use Vortex\Container;
 use Vortex\Console\ConsoleApplication;
@@ -73,5 +74,6 @@ final class AdminPackage extends Package
     public function console(ConsoleApplication $app, string $basePath): void
     {
         $app->register(new MakeAdminResourceCommand());
+        $app->register(new MakeAdminPageCommand());
     }
 }
