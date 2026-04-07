@@ -1,5 +1,5 @@
-<label class="text-xs font-medium text-zinc-500" for="field_{{ field.name }}_mirror">{{ field.label }}</label>
-<div class="mt-1 overflow-hidden rounded-lg border border-zinc-700 bg-zinc-950" data-admin-quill style="min-height: {{ field.minHeightPx|default(220) }}px">
-    <div class="admin-quill-editor h-full min-h-[inherit] bg-zinc-950 text-zinc-100" style="min-height: {{ field.minHeightPx|default(220) }}px"></div>
+<label class="text-xs font-medium text-zinc-950 dark:text-zinc-500" for="field_{{ field.name }}_mirror">{{ field.label }}</label>
+<div class="mt-1 overflow-hidden rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950" data-admin-quill style="min-height: {{ field.minHeightPx|default(220) }}px">
+    <div class="admin-quill-editor h-full min-h-[inherit] bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100" style="min-height: {{ field.minHeightPx|default(220) }}px"></div>
     <textarea id="field_{{ field.name }}" name="{{ field.name }}" class="hidden">{{ values[field.name] ?? '' }}</textarea>
 </div>

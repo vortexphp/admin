@@ -8,9 +8,9 @@
     {% set titleCls = 'text-rose-200' %}
     {% set msgCls = 'text-rose-100/90' %}
 {% else %}
-    {% set box = 'border-zinc-600/40 bg-zinc-900/50 ring-zinc-700/30' %}
-    {% set titleCls = 'text-zinc-200' %}
-    {% set msgCls = 'text-zinc-400' %}
+    {% set box = 'border-zinc-300/60 dark:border-zinc-400 dark:border-zinc-600/40 bg-zinc-200/60 dark:bg-zinc-900/50 ring-zinc-700/30' %}
+    {% set titleCls = 'text-zinc-800 dark:text-zinc-200' %}
+    {% set msgCls = 'text-zinc-600 dark:text-zinc-400' %}
 {% endif %}
 <div class="max-w-3xl rounded-xl border px-4 py-3 text-sm ring-1 {{ box }}">
     {% if widget.title %}

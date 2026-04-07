@@ -1,11 +1,11 @@
 {% extends 'admin/layout.twig' %}
 
-{% block doc_title %}{{ title }} — Admin{% endblock %}
+{% block doc_title %}{{ title }} — {{ adminBranding.name }}{% endblock %}
 
 {% block heading %}{{ title }}{% endblock %}
 
 {% block body %}
-<div class="mx-auto max-w-7xl space-y-10">
+<div class="space-y-10">
     {% for widget in dashboardWidgets %}
         {% include 'admin/widgets/' ~ widget.kind ~ '.twig' with { widget: widget } %}
     {% endfor %}

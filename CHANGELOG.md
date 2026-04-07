@@ -8,11 +8,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Changed
 
+- **Admin layout** is redesigned: gradient sidebar with emerald active states; sticky blurred **top bar** (page title + **`header_actions`** + chrome). Theme toggle moved off the sidebar into the top bar.
 - **Breaking: admin pages** — **`config/admin.php`** **`pages`** is now a **list of `AdminPage` class names** (like **`resources`**). **`page_discover`** (default **`true`**) scans **`app/Admin/Pages`** via **`PageDiscovery`**. Old **`pages`** rows (`id`, **`path`**, **`action`**, …) and app HTTP controllers for those routes are removed; use **`AdminPage`** + Twig instead. **`ResourceRegistry`** skips a resource when an **`AdminPage`** already uses the same **slug**.
 - **Navigation**: Pages sidebar rows use **`slug`** (not **`id`**); optional **`description`** is the link **`title`** and header subheading via **`pageDescription`**.
 
 ### Added
 
+- **Admin chrome** (**`config/admin.php`** → **`chrome`**): **`search`** (**`enabled`**, **`path`** or **`route`** + **`route_params`**, **`query_param`**, **`placeholder`**) and optional **`user`** (**`name`**, **`email`**, **`avatar`**, **`menu`** entries with **`label`**, **`href`**, **`external`**, **`danger`**). Merged as **`adminChrome`** on **`AdminHttpController`** views (**`AdminChrome`**). Top bar: search overlay (also **⌘K** / **Ctrl+K**), theme toggle, user dropdown; **`resources/js/admin.shell.js`** in **`publish:assets`**.
+- **`admin.branding`** in **`config/admin.php`**: **`name`**, **`logo`** (path or URL; empty = emerald icon only), **`logo_alt`**, **`footer_vendor`**, **`footer_tagline`**. **`AdminBranding::viewData()`** merged into every **`AdminHttpController`** view as **`adminBranding`**. Default logo **`resources/img/vortexadmin.svg`** published to **`public/img/vortexadmin.svg`** via **`publish:assets`**.
 - **`make:admin-resource`** CLI (**`MakeAdminResourceCommand`**, registered in **`AdminPackage::console()`**): scaffold **`App\Admin\Resources\{Model}Resource`** from **`App\Models\{Model}`** (or an FQCN) using **`$fillable`** + **`$casts`**; **`--slug`**, **`--force`**. Internals: **`Codegen\ModelInspector`**, **`Codegen\ResourceScaffolder`**, stub **`resources/stubs/admin_resource.stub`**.
 - **`make:admin-page`** CLI: scaffold **`App\Admin\Pages\{Name}Page`**, Twig under **`resources/views/admin/pages/`**; **`--slug`**, **`--label`**, **`--description`**, **`--icon`**, **`--hidden`**, **`--no-view`**, **`--force`**.
 - **`AdminPage`**, **`AdminPageController`**, **`PageDiscovery`**, **`AdminPageRegistry`** (class registry + routes + sidebar; table showcase still appended after app pages).

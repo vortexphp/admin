@@ -23,6 +23,9 @@ final class AdminPackageTest extends TestCase
             'resources/admin.css' => 'css/admin.css',
             'resources/admin.tables.js' => 'js/admin.tables.js',
             'resources/admin.modal.js' => 'js/admin.modal.js',
+            'resources/js/admin.theme.js' => 'js/admin.theme.js',
+            'resources/js/admin.shell.js' => 'js/admin.shell.js',
+            'resources/img/vortexadmin.svg' => 'img/vortexadmin.svg',
         ], $pkg->publicAssets());
     }
 }

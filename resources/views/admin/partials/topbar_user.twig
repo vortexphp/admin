@@ -1,0 +1,35 @@
+{% import 'admin/partials/icon_svg.twig' as icons %}
+{% if adminChrome.user %}
+<div id="adm-user-menu-root" class="relative">
+    <button type="button" id="adm-user-menu-toggle" class="flex max-w-[14rem] items-center gap-2 rounded-xl border border-zinc-200/90 bg-white py-1 pl-1 pr-2 text-left shadow-sm ring-1 ring-zinc-200/70 transition-colors hover:border-zinc-300 hover:bg-zinc-50 dark:border-zinc-700/80 dark:bg-zinc-900/80 dark:ring-zinc-800/80 dark:hover:border-zinc-600 dark:hover:bg-zinc-800/90" aria-expanded="false" aria-haspopup="menu">
+        <span class="relative flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-gradient-to-br from-emerald-500/90 to-teal-600/90 text-xs font-semibold text-white shadow-inner">
+            {% if adminChrome.user.avatar %}
+                <img src="{{ adminChrome.user.avatar|e('html_attr') }}" alt="" class="absolute inset-0 size-full object-cover" decoding="async">
+            {% else %}
+                {{ adminChrome.user.initials|e }}
+            {% endif %}
+        </span>
+        <span class="min-w-0 flex-1 py-0.5">
+            {% if adminChrome.user.name %}
+                <span class="block truncate text-sm font-semibold text-zinc-900 dark:text-zinc-100">{{ adminChrome.user.name }}</span>
+            {% endif %}
+            {% if adminChrome.user.email %}
+                <span class="block truncate text-xs text-zinc-500 dark:text-zinc-400">{{ adminChrome.user.email }}</span>
+            {% endif %}
+        </span>
+        {{ icons.r('chevron-down', 'h-4 w-4 shrink-0 text-zinc-400 dark:text-zinc-500') }}
+    </button>
+    <div id="adm-user-menu-panel" class="absolute right-0 z-50 mt-2 w-60 overflow-hidden rounded-xl border border-zinc-200/90 bg-white py-1 shadow-xl ring-1 ring-zinc-200/70 dark:border-zinc-700/80 dark:bg-zinc-900 dark:ring-zinc-800/80" hidden role="menu">
+        {% if adminChrome.user.menu is not empty %}
+            {% for item in adminChrome.user.menu %}
+                <a href="{{ item.href|e('html_attr') }}" role="menuitem" class="block px-4 py-2.5 text-sm transition-colors {% if item.danger %}text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/40{% else %}text-zinc-700 hover:bg-zinc-50 dark:text-zinc-200 dark:hover:bg-zinc-800/80{% endif %}"{% if item.external %} target="_blank" rel="noopener noreferrer"{% endif %}>{{ item.label }}</a>
+            {% endfor %}
+        {% else %}
+            <p class="flex items-center gap-2 px-4 py-3 text-xs text-zinc-500 dark:text-zinc-400">
+                {{ icons.r('user-circle', 'h-4 w-4 shrink-0 text-zinc-400') }}
+                <span>No menu links configured.</span>
+            </p>
+        {% endif %}
+    </div>
+</div>
+{% endif %}

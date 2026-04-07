@@ -6,18 +6,18 @@
     {% else %}
         <div class="flex flex-col gap-1">
             {% if f.label is defined and f.label %}
-                <label class="text-xs font-medium text-zinc-500" for="adm_mf_{{ fieldIdPrefix }}_{{ f.name }}">{{ f.label }}</label>
+                <label class="text-xs font-medium text-zinc-950 dark:text-zinc-500" for="adm_mf_{{ fieldIdPrefix }}_{{ f.name }}">{{ f.label }}</label>
             {% endif %}
             {% if t == 'textarea' %}
-                <textarea id="adm_mf_{{ fieldIdPrefix }}_{{ f.name }}" name="{{ f.name }}" rows="{{ f.rows|default(4) }}" class="min-h-[6rem] resize-y rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 shadow-sm placeholder:text-zinc-600 focus:border-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-500/30" {% if f.required|default(false) %}required{% endif %} {% if f.placeholder|default('') %}placeholder="{{ f.placeholder }}"{% endif %}>{{ f.value|default('') }}</textarea>
+                <textarea id="adm_mf_{{ fieldIdPrefix }}_{{ f.name }}" name="{{ f.name }}" rows="{{ f.rows|default(4) }}" class="min-h-[6rem] resize-y rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 shadow-sm placeholder:text-zinc-500 dark:placeholder:text-zinc-600 focus:border-zinc-500 dark:focus:border-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-500/30 dark:focus:ring-zinc-500/30" {% if f.required|default(false) %}required{% endif %} {% if f.placeholder|default('') %}placeholder="{{ f.placeholder }}"{% endif %}>{{ f.value|default('') }}</textarea>
             {% elseif t == 'select' %}
-                <select id="adm_mf_{{ fieldIdPrefix }}_{{ f.name }}" name="{{ f.name }}" class="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 shadow-sm focus:border-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-500/30" {% if f.required|default(false) %}required{% endif %}>
+                <select id="adm_mf_{{ fieldIdPrefix }}_{{ f.name }}" name="{{ f.name }}" class="rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 shadow-sm focus:border-zinc-500 dark:focus:border-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-500/30 dark:focus:ring-zinc-500/30" {% if f.required|default(false) %}required{% endif %}>
                     {% for optVal, optLabel in f.options|default({}) %}
                         <option value="{{ optVal }}" {% if f.value|default('') == optVal %}selected{% endif %}>{{ optLabel }}</option>
                     {% endfor %}
                 </select>
             {% else %}
-                <input id="adm_mf_{{ fieldIdPrefix }}_{{ f.name }}" type="{{ t == 'number' ? 'number' : (t == 'email' ? 'email' : 'text') }}" name="{{ f.name }}" value="{{ f.value|default('') }}" class="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 shadow-sm placeholder:text-zinc-600 focus:border-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-500/30" {% if f.required|default(false) %}required{% endif %} {% if f.placeholder|default('') %}placeholder="{{ f.placeholder }}"{% endif %} autocomplete="off">
+                <input id="adm_mf_{{ fieldIdPrefix }}_{{ f.name }}" type="{{ t == 'number' ? 'number' : (t == 'email' ? 'email' : 'text') }}" name="{{ f.name }}" value="{{ f.value|default('') }}" class="rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 shadow-sm placeholder:text-zinc-500 dark:placeholder:text-zinc-600 focus:border-zinc-500 dark:focus:border-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-500/30 dark:focus:ring-zinc-500/30" {% if f.required|default(false) %}required{% endif %} {% if f.placeholder|default('') %}placeholder="{{ f.placeholder }}"{% endif %} autocomplete="off">
             {% endif %}
         </div>
     {% endif %}

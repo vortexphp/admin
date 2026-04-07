@@ -3,53 +3,80 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{% block doc_title %}{{ title }} — Admin{% endblock %}</title>
+    <script>
+(function(){try{var k='admin-theme';var t=localStorage.getItem(k);var d=document.documentElement;if(t==='light'){d.classList.remove('dark');return;}if(t==='dark'){d.classList.add('dark');return;}if(window.matchMedia('(prefers-color-scheme: dark)').matches){d.classList.add('dark');}else{d.classList.remove('dark');}}catch(e){}})();
+    </script>
+    <title>{% block doc_title %}{{ title }} — {{ adminBranding.name }}{% endblock %}</title>
     <link rel="stylesheet" href="/css/admin.css">
 </head>
-<body class="min-h-full bg-zinc-950 text-zinc-100 antialiased">
+<body class="min-h-full bg-zinc-100/90 text-zinc-900 antialiased dark:bg-zinc-950 dark:text-zinc-100">
 {% import 'admin/partials/icon_svg.twig' as adm_icons %}
 <div class="flex min-h-screen">
-    <aside class="adm-aside-frame flex w-60 shrink-0 flex-col border-r border-zinc-800/80 bg-zinc-950 lg:w-64">
-        <div class="flex h-14 items-center gap-2.5 border-b border-zinc-800/80 px-4 lg:h-16 lg:px-5">
-            <a href="{{ route('admin.dashboard') }}" class="inline-flex items-center gap-2.5 text-sm font-semibold tracking-tight text-zinc-50 hover:text-white" aria-label="Admin dashboard">
-                {{ adm_icons.r('squares', 'h-6 w-6 shrink-0 text-emerald-400/90') }}
-                <span>Admin</span>
+    <aside class="adm-aside-frame flex w-[17rem] shrink-0 flex-col border-r border-zinc-200/80 bg-gradient-to-b from-white to-zinc-50/95 dark:border-zinc-800/70 dark:from-zinc-950 dark:to-zinc-950/98 lg:w-[18rem]">
+        <div class="flex h-[3.25rem] min-h-[3.25rem] items-center gap-2 border-b border-zinc-200/80 px-4 dark:border-zinc-800/70 lg:h-16 lg:min-h-16 lg:px-5">
+            <a href="{{ route('admin.dashboard') }}" class="inline-flex min-w-0 max-w-full flex-1 items-center gap-2.5 rounded-lg text-sm font-semibold tracking-tight text-zinc-900 ring-zinc-300/40 transition hover:text-zinc-950 focus:outline-none focus-visible:ring-2 dark:text-zinc-50 dark:ring-zinc-600/50 dark:hover:text-white" aria-label="{{ adminBranding.name }} — Dashboard">
+                {% if adminBranding.logo %}
+                    <img src="{{ adminBranding.logo }}" alt="" role="presentation" class="h-7 w-auto max-h-7 max-w-[10rem] shrink-0 object-contain object-left invert dark:invert-0 lg:h-8 lg:max-h-8 lg:max-w-[11.5rem]" width="828" height="155" decoding="async" fetchpriority="low">
+                {% else %}
+                    {{ adm_icons.r('squares', 'h-6 w-6 shrink-0 text-emerald-600 dark:text-emerald-400/90') }}
+                    <span class="truncate">{{ adminBranding.name }}</span>
+                {% endif %}
             </a>
         </div>
-        <nav class="flex-1 overflow-y-auto p-3 lg:p-4" aria-label="Admin">
+        <nav class="flex-1 overflow-y-auto overflow-x-hidden px-3 py-4 lg:px-4 lg:py-5" aria-label="Admin">
             {% include 'admin/partials/nav.twig' %}
         </nav>
-        <div class="hidden border-t border-zinc-700/70 bg-zinc-950/50 px-4 py-3 text-xs text-zinc-500 ring-1 ring-zinc-900/80 lg:block">
+        {% if adminBranding.footer_vendor != '' or adminBranding.footer_tagline != '' %}
+        <div class="hidden border-t border-zinc-200/80 bg-white/60 px-4 py-3 text-xs text-zinc-600 backdrop-blur-sm dark:border-zinc-800/70 dark:bg-zinc-950/40 dark:text-zinc-500 lg:block">
             <span class="inline-flex items-center gap-2">
-                {{ adm_icons.r('squares', 'h-4 w-4 shrink-0 text-zinc-600') }}
-                <span><span class="font-medium text-zinc-500">Vortex</span><span class="text-zinc-600"> · </span>control panel</span>
+                {{ adm_icons.r('squares', 'h-4 w-4 shrink-0 text-zinc-400 dark:text-zinc-600') }}
+                <span>
+                    {% if adminBranding.footer_vendor != '' %}
+                        <span class="font-medium text-zinc-700 dark:text-zinc-400">{{ adminBranding.footer_vendor }}</span>
+                        {% if adminBranding.footer_tagline != '' %}<span class="text-zinc-500 dark:text-zinc-500"> · </span>{% endif %}
+                    {% endif %}
+                    {% if adminBranding.footer_tagline != '' %}<span class="text-zinc-500 dark:text-zinc-500">{{ adminBranding.footer_tagline }}</span>{% endif %}
+                </span>
             </span>
         </div>
+        {% endif %}
     </aside>
     <div class="flex min-w-0 flex-1 flex-col">
-        <header class="sticky top-0 z-10 border-b border-zinc-700/80 bg-zinc-950/90 px-5 py-4 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-zinc-950/75 lg:px-8">
-            {% block header %}
-                <div class="flex flex-wrap items-start justify-between gap-4">
-                    <div class="min-w-0 flex-1">
-                        <h1 class="truncate text-base font-semibold tracking-tight text-zinc-100 lg:text-lg">{% block heading %}{{ title }}{% endblock %}</h1>
-                        {% block subheading %}{% if pageDescription is defined and pageDescription != '' %}<p class="mt-1 max-w-3xl text-sm font-normal text-zinc-500">{{ pageDescription }}</p>{% endif %}{% endblock %}
-                    </div>
-                    <div class="flex shrink-0 flex-wrap items-center gap-2">
-                        {% block header_actions %}{% endblock %}
-                    </div>
+        <div class="adm-topbar sticky top-0 z-20 border-b border-zinc-200/80 bg-white/85 shadow-sm shadow-zinc-900/[0.03] backdrop-blur-md backdrop-saturate-150 dark:border-zinc-800/70 dark:bg-zinc-950/80 dark:shadow-none dark:backdrop-blur-md" role="region" aria-label="Admin toolbar">
+            <div class="flex min-h-14 flex-wrap items-center justify-end gap-2 px-4 py-2.5 lg:px-8">
+                {% block header_actions %}{% endblock %}
+                {% if adminChrome.search.enabled %}
+                <button type="button" id="adm-search-open" class="inline-flex items-center gap-2 rounded-xl border border-zinc-200/90 bg-white py-2 pl-2.5 pr-3 text-sm font-medium text-zinc-600 shadow-sm ring-1 ring-zinc-200/70 transition hover:border-zinc-300 hover:bg-zinc-50 hover:text-zinc-900 dark:border-zinc-700/80 dark:bg-zinc-900/50 dark:text-zinc-300 dark:ring-zinc-800/80 dark:hover:border-zinc-600 dark:hover:bg-zinc-800/90 dark:hover:text-zinc-100" aria-label="Search">
+                    {{ adm_icons.r('magnifying-glass', 'h-5 w-5 text-zinc-500 dark:text-zinc-400') }}
+                    <span class="hidden sm:inline">Search</span>
+                    <kbd class="hidden rounded border border-zinc-200 bg-zinc-100 px-1.5 py-0.5 font-mono text-[0.65rem] font-normal text-zinc-500 xl:inline dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-400">⌘K</kbd>
+                </button>
+                {% endif %}
+                {% include 'admin/partials/theme_toggle.twig' %}
+                {% include 'admin/partials/topbar_user.twig' %}
+            </div>
+        </div>
+        <main id="adm-main" class="flex-1">
+            <div class="adm-shell px-4 py-8 sm:px-6 lg:px-8 lg:py-10">
+                <div class="{% block page_content_class %}mx-auto w-full max-w-7xl{% endblock %}">
+                    {% block page_intro %}
+                    <header class="adm-page-intro mb-8 w-full">
+                        <h1 class="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-50 lg:text-3xl">{% block heading %}{{ title }}{% endblock %}</h1>
+                        {% block subheading %}{% if pageDescription is defined and pageDescription != '' %}<p class="mt-2 w-full text-base leading-relaxed text-zinc-600 dark:text-zinc-400">{{ pageDescription }}</p>{% endif %}{% endblock %}
+                    </header>
+                    {% endblock %}
+                    {% block body %}{% endblock %}
                 </div>
-            {% endblock %}
-        </header>
-        <main class="flex-1">
-            <div class="adm-shell py-12">
-                {% block body %}{% endblock %}
             </div>
         </main>
     </div>
 </div>
 {% include 'admin/partials/modal_shell.twig' %}
+{% include 'admin/partials/search_overlay.twig' %}
 <script defer src="/js/admin.tables.js"></script>
 <script defer src="/js/admin.modal.js"></script>
+<script defer src="/js/admin.theme.js"></script>
+<script defer src="/js/admin.shell.js"></script>
 {% block scripts %}{% endblock %}
 </body>
 </html>

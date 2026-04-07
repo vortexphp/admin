@@ -1,17 +1,17 @@
 <div class="max-w-3xl">
     {% if widget.title %}
-        <h2 class="mb-3 text-sm font-semibold text-zinc-200">{{ widget.title }}</h2>
+        <h2 class="mb-3 text-sm font-semibold text-zinc-800 dark:text-zinc-200">{{ widget.title }}</h2>
     {% endif %}
     {% if widget.items is empty %}
-        <p class="text-sm text-zinc-500">No links.</p>
+        <p class="text-sm text-zinc-950 dark:text-zinc-500">No links.</p>
     {% else %}
-        <ul class="divide-y divide-zinc-800/80 rounded-xl border border-zinc-800/80 bg-zinc-900/20">
+        <ul class="divide-y divide-zinc-800/80 rounded-xl border border-zinc-200/90 dark:border-zinc-800/80 bg-zinc-900/20">
             {% for item in widget.items %}
                 <li>
-                    <a class="flex flex-col gap-0.5 px-4 py-3.5 text-sm transition-colors hover:bg-zinc-900/40" href="{{ item.href }}">
-                        <span class="font-medium text-zinc-200">{{ item.label }}</span>
+                    <a class="flex flex-col gap-0.5 px-4 py-3.5 text-sm transition-colors hover:bg-zinc-200 dark:hover:bg-zinc-900/40" href="{{ item.href }}">
+                        <span class="font-medium text-zinc-800 dark:text-zinc-200">{{ item.label }}</span>
                         {% if item.description is defined and item.description %}
-                            <span class="text-xs text-zinc-500">{{ item.description }}</span>
+                            <span class="text-xs text-zinc-950 dark:text-zinc-500">{{ item.description }}</span>
                         {% endif %}
                     </a>
                 </li>

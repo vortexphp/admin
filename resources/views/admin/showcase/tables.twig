@@ -1,19 +1,19 @@
 {% extends 'admin/layout.twig' %}
 
-{% block doc_title %}{{ title }} — Admin{% endblock %}
+{% block doc_title %}{{ title }} — {{ adminBranding.name }}{% endblock %}
 
 {% block heading %}{{ title }}{% endblock %}
 
 {% block subheading %}
-<p class="mt-1 max-w-3xl text-sm leading-relaxed text-zinc-500">
+<p class="mt-1 w-full text-sm leading-relaxed text-zinc-950 dark:text-zinc-500">
     Demo data only. This page shows column cell styles (text, badges, numbers, dates, URLs, email, color, toggle, image thumbnails),
     sortable headers, text + select + global search filters, per-page sizing, pagination, the column visibility picker, a modal row preview, and a sample link action.
-    Built with <code class="rounded bg-zinc-900 px-1 py-0.5 text-xs text-zinc-400">Table::records()</code> so no database is required.
+    Built with <code class="rounded bg-zinc-900 px-1 py-0.5 text-xs text-zinc-600 dark:text-zinc-400">Table::records()</code> so no database is required.
 </p>
 {% endblock %}
 
 {% block body %}
-<div class="mx-auto max-w-7xl space-y-5">
+<div class="space-y-5">
     {% include 'admin/partials/resource_index_table.twig' %}
 </div>
 {% endblock %}

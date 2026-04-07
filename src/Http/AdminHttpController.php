@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Vortex\Admin\Http;
 
+use Vortex\Admin\AdminBranding;
+use Vortex\Admin\AdminChrome;
 use Vortex\Admin\AdminPageRegistry;
 use Vortex\Admin\Navigation;
 use Vortex\Admin\ResourceRegistry;
@@ -29,6 +31,8 @@ abstract class AdminHttpController extends Controller
             'adminNavigation' => $this->navigation->toViewArray(),
             'adminSidebarResources' => $sidebarResources,
             'adminSidebarPages' => AdminPageRegistry::sidebarEntries(),
+            'adminBranding' => AdminBranding::viewData(),
+            'adminChrome' => AdminChrome::viewData(),
         ]), $status);
     }
 }

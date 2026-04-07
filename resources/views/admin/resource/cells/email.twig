@@ -1,5 +1,5 @@
 {% if cell %}
     {% set lim = col.maxLabelLength|default(48) %}
     {% set label = cell|length > lim ? cell|slice(0, lim - 1) ~ '…' : cell %}
-    <a href="mailto:{{ cell|e('html_attr') }}" class="text-zinc-300 underline decoration-zinc-600 underline-offset-2 hover:text-white">{{ label }}</a>
+    <a href="mailto:{{ cell|e('html_attr') }}" class="text-zinc-700 dark:text-zinc-300 underline decoration-zinc-400 dark:decoration-zinc-600 underline-offset-2 hover:text-zinc-950 dark:hover:text-white">{{ label }}</a>
 {% endif %}

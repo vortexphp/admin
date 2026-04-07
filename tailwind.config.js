@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ['./resources/views/**/*.twig'],
+  darkMode: 'class',
+  content: ['./resources/views/**/*.twig', './resources/js/**/*.js'],
   theme: {
     extend: {
       fontFamily: {

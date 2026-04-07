@@ -1,5 +1,7 @@
 # vortexphp/admin
 
+![Admin panel screenshot](screenshot/screenshot1.png)
+
 Admin UI foundation for [Vortex](https://github.com/vortexphp/framework) apps: same integration pattern as **vortexphp/live**.
 
 ## Requirements
@@ -29,7 +31,7 @@ Publish static assets:
 php vortex publish:assets
 ```
 
-This copies **`resources/admin.css`** → **`public/css/admin.css`** (see **`AdminPackage::publicAssets()`**). That file is generated from **`resources/admin.src.css`** via Tailwind (**`npm run build`** in **`vortexphp/admin`**).
+This copies package assets (see **`AdminPackage::publicAssets()`**): **`admin.css`**, JS helpers, and the default panel logo **`img/vortexadmin.svg`**. CSS is generated from **`resources/admin.src.css`** via Tailwind (**`npm run build`** in **`vortexphp/admin`**).
 
 ## Navigation (header links)
 
@@ -113,6 +115,15 @@ return [
     // Optional: page classes when discovery is off or for extras (first registration wins on slug)
     'pages' => [
         // App\Admin\Pages\ReportsPage::class,
+    ],
+
+    // Sidebar header (logo + name), document title suffix, footer line — see AdminBranding
+    'branding' => [
+        'name' => 'Admin',
+        'logo' => '/img/vortexadmin.svg', // empty string = icon only; or https://… / absolute path
+        'logo_alt' => 'Admin',
+        'footer_vendor' => 'Vortex',
+        'footer_tagline' => 'control panel',
     ],
 ];
 ```

@@ -1,27 +1,30 @@
 {% import 'admin/partials/icon_svg.twig' as icons %}
 {% set adm_nav_overview_active = adminPage is not defined and slug is not defined %}
-<div class="space-y-6">
-    <div class="space-y-0.5">
-        <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-colors {% if adm_nav_overview_active %}bg-zinc-800/80 text-zinc-50{% else %}text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100{% endif %}">
-            {{ icons.r('home', adm_nav_overview_active ? 'h-5 w-5 shrink-0 text-zinc-300' : 'h-5 w-5 shrink-0 text-zinc-500') }}
-            <span>Overview</span>
-        </a>
+<div class="space-y-8">
+    <div>
+        <p class="mb-2 px-3 text-[0.65rem] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Main</p>
+        <div class="space-y-1">
+            <a href="{{ route('admin.dashboard') }}" class="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors {% if adm_nav_overview_active %}bg-emerald-500/12 text-emerald-900 shadow-sm ring-1 ring-emerald-500/20 dark:bg-emerald-500/15 dark:text-emerald-100 dark:ring-emerald-500/25{% else %}text-zinc-600 hover:bg-zinc-100/90 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/70 dark:hover:text-zinc-100{% endif %}">
+                {{ icons.r('home', adm_nav_overview_active ? 'h-5 w-5 shrink-0 text-emerald-700 dark:text-emerald-300' : 'h-5 w-5 shrink-0 text-zinc-400 group-hover:text-zinc-600 dark:text-zinc-500 dark:group-hover:text-zinc-300') }}
+                <span>Overview</span>
+            </a>
+        </div>
     </div>
 
     {% if adminSidebarPages is defined and adminSidebarPages is not empty %}
         <div>
-            <p class="mb-1.5 px-3 text-[0.65rem] font-semibold uppercase tracking-wider text-zinc-500">Pages</p>
-            <div class="space-y-0.5">
+            <p class="mb-2 px-3 text-[0.65rem] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Pages</p>
+            <div class="space-y-1">
                 {% for p in adminSidebarPages %}
                     {% set adm_page_active = adminPage is defined and adminPage == p.slug %}
-                    {% set adm_page_icon = adm_page_active ? 'h-5 w-5 shrink-0 text-zinc-300' : 'h-5 w-5 shrink-0 text-zinc-500' %}
-                    <a href="{{ route(p.route, p.routeParams|default({})) }}" class="flex items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-colors {% if adm_page_active %}bg-zinc-800/80 text-zinc-50{% else %}text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100{% endif %}"{% if p.description is defined and p.description != '' %} title="{{ p.description|e('html_attr') }}"{% endif %}>
+                    {% set adm_page_icon = adm_page_active ? 'h-5 w-5 shrink-0 text-emerald-700 dark:text-emerald-300' : 'h-5 w-5 shrink-0 text-zinc-400 group-hover:text-zinc-600 dark:text-zinc-500 dark:group-hover:text-zinc-300' %}
+                    <a href="{{ route(p.route, p.routeParams|default({})) }}" class="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors {% if adm_page_active %}bg-emerald-500/12 text-emerald-900 shadow-sm ring-1 ring-emerald-500/20 dark:bg-emerald-500/15 dark:text-emerald-100 dark:ring-emerald-500/25{% else %}text-zinc-600 hover:bg-zinc-100/90 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/70 dark:hover:text-zinc-100{% endif %}"{% if p.description is defined and p.description != '' %} title="{{ p.description|e('html_attr') }}"{% endif %}>
                         {% if p.navIcon is defined and p.navIcon %}
                             {{ icons.r(p.navIcon, adm_page_icon) }}
                         {% else %}
                             {{ icons.r('document', adm_page_icon) }}
                         {% endif %}
-                        <span>{{ p.label }}</span>
+                        <span class="truncate">{{ p.label }}</span>
                     </a>
                 {% endfor %}
             </div>
@@ -30,17 +33,17 @@
 
     {% if adminSidebarResources is not empty %}
         <div>
-            <p class="mb-1.5 px-3 text-[0.65rem] font-semibold uppercase tracking-wider text-zinc-500">Resources</p>
-            <div class="space-y-0.5">
+            <p class="mb-2 px-3 text-[0.65rem] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">Resources</p>
+            <div class="space-y-1">
                 {% for r in adminSidebarResources %}
-                    {% set nav_icon_class = slug is defined and slug == r.slug ? 'h-5 w-5 shrink-0 text-zinc-300' : 'h-5 w-5 shrink-0 text-zinc-500' %}
-                    <a href="{{ route('admin.resource.index', { slug: r.slug }) }}" class="flex items-center gap-2.5 rounded-md px-3 py-2 text-sm transition-colors {% if slug is defined and slug == r.slug %}bg-zinc-800/80 text-zinc-50{% else %}text-zinc-400 hover:bg-zinc-900 hover:text-zinc-100{% endif %}">
+                    {% set nav_icon_class = slug is defined and slug == r.slug ? 'h-5 w-5 shrink-0 text-emerald-700 dark:text-emerald-300' : 'h-5 w-5 shrink-0 text-zinc-400 group-hover:text-zinc-600 dark:text-zinc-500 dark:group-hover:text-zinc-300' %}
+                    <a href="{{ route('admin.resource.index', { slug: r.slug }) }}" class="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors {% if slug is defined and slug == r.slug %}bg-emerald-500/12 text-emerald-900 shadow-sm ring-1 ring-emerald-500/20 dark:bg-emerald-500/15 dark:text-emerald-100 dark:ring-emerald-500/25{% else %}text-zinc-600 hover:bg-zinc-100/90 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/70 dark:hover:text-zinc-100{% endif %}">
                         {% if r.navIcon is defined and r.navIcon %}
                             {{ icons.r(r.navIcon, nav_icon_class) }}
                         {% else %}
                             {% include 'admin/partials/nav_resource_icon.twig' with { slug: r.slug, icon_class: nav_icon_class } %}
                         {% endif %}
-                        <span>{{ r.label }}</span>
+                        <span class="truncate">{{ r.label }}</span>
                     </a>
                 {% endfor %}
             </div>
@@ -50,8 +53,8 @@
     {% for entry in adminNavigation %}
         {% if entry.kind == 'group' %}
             <div>
-                <p class="mb-1.5 px-3 text-[0.65rem] font-semibold uppercase tracking-wider text-zinc-500">{{ entry.label }}</p>
-                <div class="space-y-0.5">
+                <p class="mb-2 px-3 text-[0.65rem] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-500">{{ entry.label }}</p>
+                <div class="space-y-1">
                     {% for item in entry.items %}
                         {% include 'admin/partials/nav_link.twig' %}
                     {% endfor %}
@@ -59,7 +62,7 @@
             </div>
         {% else %}
             {% set item = entry %}
-            <div class="space-y-0.5">
+            <div class="space-y-1">
                 {% include 'admin/partials/nav_link.twig' %}
             </div>
         {% endif %}

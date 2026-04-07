@@ -1,6 +1,6 @@
 <div class="flex items-center gap-2">
     <input id="field_{{ field.name }}" type="checkbox" name="{{ field.name }}" value="{{ field.valueWhenChecked|default('1') }}"
-           class="size-4 rounded border-zinc-600 bg-zinc-950 text-zinc-100 focus:ring-2 focus:ring-zinc-500/30"
+           class="size-4 rounded border-zinc-400 dark:border-zinc-600 bg-white dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-zinc-500/30 dark:focus:ring-zinc-500/30"
            {% if values[field.name] %}checked{% endif %}>
-    <label class="text-sm text-zinc-300" for="field_{{ field.name }}">{{ field.label }}</label>
+    <label class="text-sm text-zinc-700 dark:text-zinc-300" for="field_{{ field.name }}">{{ field.label }}</label>
 </div>

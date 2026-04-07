@@ -1,4 +1,4 @@
-<label class="text-xs font-medium text-zinc-500" for="field_{{ field.name }}">{{ field.label }}</label>
+<label class="text-xs font-medium text-zinc-950 dark:text-zinc-500" for="field_{{ field.name }}">{{ field.label }}</label>
 <input id="field_{{ field.name }}" type="text" name="{{ field.name }}" value="{{ values[field.name] ?? '' }}"
-       class="rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 shadow-sm placeholder:text-zinc-600 focus:border-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-500/30"
+       class="rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 shadow-sm placeholder:text-zinc-500 dark:placeholder:text-zinc-600 focus:border-zinc-500 dark:focus:border-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-500/30 dark:focus:ring-zinc-500/30"
        autocomplete="{{ field.autocomplete|default('off') }}">

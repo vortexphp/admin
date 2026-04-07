@@ -1,6 +1,6 @@
-<label class="text-xs font-medium text-zinc-500" for="field_{{ field.name }}">{{ field.label }}</label>
+<label class="text-xs font-medium text-zinc-950 dark:text-zinc-500" for="field_{{ field.name }}">{{ field.label }}</label>
 <input id="field_{{ field.name }}" type="text" name="{{ field.name }}" data-admin-tagify
        data-as-json="{{ field.asJson ? '1' : '0' }}"
        value="{{ values[field.name] ?? '' }}"
-       class="mt-1 w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-zinc-100 placeholder:text-zinc-600"
+       class="mt-1 w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 px-3 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-500 dark:placeholder:text-zinc-600"
        placeholder="Type and press Enter…" autocomplete="off">

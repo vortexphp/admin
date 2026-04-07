@@ -1,0 +1,20 @@
+{% import 'admin/partials/icon_svg.twig' as icons %}
+{% if adminChrome.search.enabled %}
+<div id="adm-search-root" class="fixed inset-0 z-[200] hidden bg-zinc-950/60 backdrop-blur-sm dark:bg-black/70" role="dialog" aria-modal="true" aria-labelledby="adm-search-heading" aria-hidden="true">
+    <div class="flex min-h-full items-start justify-center px-4 pt-[min(20vh,8rem)]">
+        <div class="relative w-full max-w-xl overflow-hidden rounded-2xl border border-zinc-200/90 bg-white shadow-2xl ring-1 ring-zinc-200/60 dark:border-zinc-700/80 dark:bg-zinc-900 dark:ring-zinc-800/80" data-adm-search-card>
+            <div class="flex items-center gap-3 border-b border-zinc-200/90 px-4 py-3 dark:border-zinc-800/80">
+                {{ icons.r('magnifying-glass', 'h-5 w-5 shrink-0 text-zinc-400 dark:text-zinc-500') }}
+                <form method="get" action="{{ adminChrome.search.action|e('html_attr') }}" class="min-w-0 flex-1">
+                    <label id="adm-search-heading" class="sr-only" for="adm-search-input">Search</label>
+                    <input id="adm-search-input" type="search" name="{{ adminChrome.search.query_param|e('html_attr') }}" autocomplete="off" placeholder="{{ adminChrome.search.placeholder|e('html_attr') }}" class="w-full border-0 bg-transparent text-base text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-0 dark:text-zinc-100 dark:placeholder:text-zinc-500">
+                </form>
+                <button type="button" class="inline-flex shrink-0 items-center gap-1 rounded-lg border border-zinc-200 bg-zinc-50 px-2 py-1 text-[0.65rem] font-medium uppercase tracking-wide text-zinc-500 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-400" data-adm-search-close>
+                    Esc
+                </button>
+            </div>
+            <p class="px-4 py-3 text-xs text-zinc-500 dark:text-zinc-400">Press <kbd class="rounded border border-zinc-200 bg-zinc-100 px-1.5 py-0.5 font-sans text-zinc-600 dark:border-zinc-600 dark:bg-zinc-800 dark:text-zinc-300">Enter</kbd> to run the search.</p>
+        </div>
+    </div>
+</div>
+{% endif %}

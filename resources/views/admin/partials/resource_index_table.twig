@@ -1,12 +1,12 @@
 {% import 'admin/partials/icon_svg.twig' as icons %}
 {% set adm_table_show_toolbar = (tableFilters|length > 0) or (perPageOptions|length > 1) or tableColumnPickerEnabled %}
 
-<div class="adm-index-table-card overflow-hidden rounded-xl border border-zinc-700/80 bg-zinc-900/10 shadow-sm ring-1 ring-zinc-800/70">
+<div class="adm-index-table-card overflow-hidden rounded-xl border border-zinc-200/85 dark:border-zinc-700/80 bg-zinc-100/70 dark:bg-zinc-900/10 shadow-sm ring-1 ring-zinc-200/70 dark:ring-zinc-800/70">
     {% if adm_table_show_toolbar %}
-        <div class="border-b border-zinc-800/80 bg-zinc-950/35">
+        <div class="border-b border-zinc-200/90 dark:border-zinc-800/80 bg-zinc-100/80 dark:bg-zinc-950/35">
             {% if tableFilters|length > 0 or perPageOptions|length > 1 %}
-                <div class="flex items-center gap-2 border-b border-zinc-800/50 px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-zinc-500">
-                    {{ icons.r('funnel', 'h-4 w-4 shrink-0 text-zinc-500') }}
+                <div class="flex items-center gap-2 border-b border-zinc-200/70 dark:border-zinc-800/50 px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-zinc-950 dark:text-zinc-500">
+                    {{ icons.r('funnel', 'h-4 w-4 shrink-0 text-zinc-950 dark:text-zinc-500') }}
                     <span>Filters</span>
                 </div>
             {% endif %}
@@ -19,24 +19,24 @@
                         {% endif %}
                         {% for filter in tableFilters %}
                             <div class="flex min-w-[10rem] flex-col gap-1">
-                                <label class="text-xs font-medium text-zinc-500" for="adm_f_{{ attribute(filter, 'name') }}">{{ attribute(filter, 'label') }}</label>
+                                <label class="text-xs font-medium text-zinc-950 dark:text-zinc-500" for="adm_f_{{ attribute(filter, 'name') }}">{{ attribute(filter, 'label') }}</label>
                                 {% set fp = filter.queryParam %}
                                 {% if filter.inputKind == 'select' %}
-                                    <select id="adm_f_{{ attribute(filter, 'name') }}" name="{{ fp }}" class="rounded-lg border border-zinc-700 bg-zinc-950 px-2.5 py-2 text-sm text-zinc-100 shadow-sm focus:border-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-500/30">
+                                    <select id="adm_f_{{ attribute(filter, 'name') }}" name="{{ fp }}" class="rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 px-2.5 py-2 text-sm text-zinc-900 dark:text-zinc-100 shadow-sm focus:border-zinc-500 dark:focus:border-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-500/30 dark:focus:ring-zinc-500/30">
                                         <option value="">— All —</option>
                                         {% for optVal, optLabel in filter.options %}
                                             <option value="{{ optVal }}" {% if attribute(filterValues, fp) == optVal %}selected{% endif %}>{{ optLabel }}</option>
                                         {% endfor %}
                                     </select>
                                 {% else %}
-                                    <input id="adm_f_{{ attribute(filter, 'name') }}" type="text" name="{{ fp }}" value="{{ attribute(filterValues, fp)|default('') }}" class="rounded-lg border border-zinc-700 bg-zinc-950 px-2.5 py-2 text-sm text-zinc-100 placeholder:text-zinc-600 shadow-sm focus:border-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-500/30" autocomplete="off">
+                                    <input id="adm_f_{{ attribute(filter, 'name') }}" type="text" name="{{ fp }}" value="{{ attribute(filterValues, fp)|default('') }}" class="rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 px-2.5 py-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder:text-zinc-500 dark:placeholder:text-zinc-600 shadow-sm focus:border-zinc-500 dark:focus:border-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-500/30 dark:focus:ring-zinc-500/30" autocomplete="off">
                                 {% endif %}
                             </div>
                         {% endfor %}
                         {% if perPageOptions|length > 1 %}
                             <div class="flex min-w-[10rem] flex-col gap-1">
-                                <label class="text-xs font-medium text-zinc-500" for="adm_per_page">Per page</label>
-                                <select id="adm_per_page" name="per_page" class="rounded-lg border border-zinc-700 bg-zinc-950 px-2.5 py-2 text-sm text-zinc-100 shadow-sm focus:border-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-500/30" aria-label="Rows per page" onchange="this.form.submit()">
+                                <label class="text-xs font-medium text-zinc-950 dark:text-zinc-500" for="adm_per_page">Per page</label>
+                                <select id="adm_per_page" name="per_page" class="rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-950 px-2.5 py-2 text-sm text-zinc-900 dark:text-zinc-100 shadow-sm focus:border-zinc-500 dark:focus:border-zinc-500 focus:outline-none focus:ring-2 focus:ring-zinc-500/30 dark:focus:ring-zinc-500/30" aria-label="Rows per page" onchange="this.form.submit()">
                                     {% for n in perPageOptions %}
                                         <option value="{{ n }}" {% if n == tablePerPageCurrent %}selected{% endif %}>{{ n }}</option>
                                     {% endfor %}
@@ -45,12 +45,12 @@
                         {% endif %}
                         {% if tableFilters|length > 0 %}
                             <div class="flex w-full shrink-0 items-center gap-2 lg:ml-auto lg:w-auto">
-                                <button type="submit" class="inline-flex items-center gap-1.5 rounded-lg border border-zinc-600/40 bg-zinc-100 px-3.5 py-2 text-sm font-medium text-zinc-950 shadow-sm ring-1 ring-zinc-800/30 hover:bg-white">
+                                <button type="submit" class="inline-flex items-center gap-1.5 rounded-lg border border-zinc-300/60 dark:border-zinc-400 dark:border-zinc-600/40 bg-zinc-100 px-3.5 py-2 text-sm font-medium text-zinc-950 shadow-sm ring-1 ring-zinc-200/30 dark:ring-zinc-800/30 hover:bg-white">
                                     {{ icons.r('check', 'h-4 w-4 shrink-0 text-zinc-700') }}
                                     <span>Apply</span>
                                 </button>
-                                <a href="{{ tableListUrl }}" class="inline-flex items-center gap-1.5 rounded-lg border border-zinc-700 bg-transparent px-3.5 py-2 text-sm font-medium text-zinc-200 ring-1 ring-zinc-800/40 hover:bg-zinc-900/60">
-                                    {{ icons.r('arrow-path', 'h-4 w-4 shrink-0 text-zinc-500') }}
+                                <a href="{{ tableListUrl }}" class="inline-flex items-center gap-1.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-transparent px-3.5 py-2 text-sm font-medium text-zinc-800 dark:text-zinc-200 ring-1 ring-zinc-200/40 dark:ring-zinc-800/40 hover:bg-zinc-100/95 dark:bg-zinc-900/60">
+                                    {{ icons.r('arrow-path', 'h-4 w-4 shrink-0 text-zinc-950 dark:text-zinc-500') }}
                                     <span>Reset</span>
                                 </a>
                             </div>
@@ -59,13 +59,13 @@
                 {% endif %}
                 {% if tableColumnPickerEnabled %}
                     <div class="relative shrink-0 self-end" style="z-index:50">
-                        <button type="button" id="adm_col_picker_toggle" class="inline-flex items-center gap-2 rounded-lg border border-zinc-700 bg-zinc-900/50 px-3 py-2 text-sm font-medium text-zinc-200 shadow-sm ring-1 ring-zinc-800/60 hover:bg-zinc-900/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/40" aria-expanded="false" aria-controls="adm_col_picker_panel" aria-haspopup="true">
-                            {{ icons.r('columns', 'h-4 w-4 shrink-0 text-zinc-500') }}
+                        <button type="button" id="adm_col_picker_toggle" class="inline-flex items-center gap-2 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-200/60 dark:bg-zinc-900/50 px-3 py-2 text-sm font-medium text-zinc-800 dark:text-zinc-200 shadow-sm ring-1 ring-zinc-200/60 dark:ring-zinc-800/60 hover:bg-zinc-200/80 dark:bg-zinc-900/80 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/40 dark:focus-visible:ring-zinc-500/40" aria-expanded="false" aria-controls="adm_col_picker_panel" aria-haspopup="true">
+                            {{ icons.r('columns', 'h-4 w-4 shrink-0 text-zinc-950 dark:text-zinc-500') }}
                             <span>Columns</span>
-                            {{ icons.r('chevron-down', 'h-4 w-4 shrink-0 text-zinc-500') }}
+                            {{ icons.r('chevron-down', 'h-4 w-4 shrink-0 text-zinc-950 dark:text-zinc-500') }}
                         </button>
-                        <div id="adm_col_picker_panel" class="absolute right-0 mt-2 min-w-[10rem] max-w-[18rem] rounded-xl border border-zinc-700/90 bg-zinc-950 p-3 shadow-xl ring-1 ring-zinc-800/80 lg:min-w-[14rem]" style="z-index:51;top:100%" hidden role="region" aria-label="Column visibility">
-                            <p class="mb-2 flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-zinc-500">
+                        <div id="adm_col_picker_panel" class="absolute right-0 mt-2 min-w-[10rem] max-w-[18rem] rounded-xl border border-zinc-300/90 dark:border-zinc-700/90 bg-white dark:bg-zinc-950 p-3 shadow-xl ring-1 ring-zinc-200/80 dark:ring-zinc-800/80 lg:min-w-[14rem]" style="z-index:51;top:100%" hidden role="region" aria-label="Column visibility">
+                            <p class="mb-2 flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-zinc-950 dark:text-zinc-500">
                                 {{ icons.r('columns', 'h-4 w-4 shrink-0 text-zinc-600') }}
                                 <span>Visible columns</span>
                             </p>
@@ -80,7 +80,7 @@
 
     <div id="adm_resource_table" class="adm-resource-frame overflow-hidden">
         {% if records is empty %}
-            <p class="flex flex-col items-center justify-center gap-3 px-4 py-14 text-center text-sm text-zinc-500">
+            <p class="flex flex-col items-center justify-center gap-3 px-4 py-14 text-center text-sm text-zinc-950 dark:text-zinc-500">
                 {{ icons.r('table', 'h-7 w-7 shrink-0 text-zinc-600 opacity-80') }}
                 <span>{{ tableEmptyMessage|default('No records found.') }}</span>
             </p>
@@ -90,15 +90,15 @@
                     <thead>
                     <tr>
                         {% for col in tableColumns %}
-                            <th data-adm-col="{{ col.name }}" class="border-b border-zinc-800 bg-zinc-900/70 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-zinc-400">
+                            <th data-adm-col="{{ col.name }}" class="border-b border-zinc-200 dark:border-zinc-800 bg-zinc-100/90 dark:bg-zinc-900/70 px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-zinc-600 dark:text-zinc-400">
                                 {% if col.sortUrl is defined %}
-                                    <a href="{{ col.sortUrl }}" class="inline-flex items-center gap-1 rounded text-zinc-400 transition-colors hover:text-zinc-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/40">
+                                    <a href="{{ col.sortUrl }}" class="inline-flex items-center gap-1 rounded text-zinc-600 dark:text-zinc-400 transition-colors hover:text-zinc-900 dark:text-zinc-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-500/40 dark:focus-visible:ring-zinc-500/40">
                                         <span>{{ col.label }}</span>
                                         {% if col.sortActive|default(false) %}
                                             {% if col.sortDir == 'desc' %}
-                                                {{ icons.r('chevron-down', 'h-4 w-4 shrink-0 text-zinc-500') }}
+                                                {{ icons.r('chevron-down', 'h-4 w-4 shrink-0 text-zinc-950 dark:text-zinc-500') }}
                                             {% else %}
-                                                {{ icons.r('chevron-up', 'h-4 w-4 shrink-0 text-zinc-500') }}
+                                                {{ icons.r('chevron-up', 'h-4 w-4 shrink-0 text-zinc-950 dark:text-zinc-500') }}
                                             {% endif %}
                                         {% endif %}
                                     </a>
@@ -108,17 +108,17 @@
                             </th>
                         {% endfor %}
                         {% if tableActions|length > 0 %}
-                            <th data-adm-col="__actions" class="border-b border-zinc-800 bg-zinc-900/70 px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-zinc-400" aria-label="Actions"></th>
+                            <th data-adm-col="__actions" class="border-b border-zinc-200 dark:border-zinc-800 bg-zinc-100/90 dark:bg-zinc-900/70 px-4 py-3 text-right text-xs font-semibold uppercase tracking-wide text-zinc-600 dark:text-zinc-400" aria-label="Actions"></th>
                         {% endif %}
                     </tr>
                     </thead>
-                    <tbody class="bg-zinc-950/30">
+                    <tbody class="bg-zinc-50/95 dark:bg-zinc-950/30">
                     {% for row in records %}
                         {% set rowIndex = loop.index0 %}
-                        <tr class="border-b border-zinc-800/80 transition-colors last:border-0 hover:bg-zinc-900/35">
+                        <tr class="border-b border-zinc-200/90 dark:border-zinc-800/80 transition-colors last:border-0 hover:bg-zinc-200/40 dark:bg-zinc-900/35">
                             {% for col in tableColumns %}
                                 {% set cell = attribute(row, col.name) %}
-                                <td data-adm-col="{{ col.name }}" class="px-4 py-3 text-sm text-zinc-200 {% if col.kind in ['text', 'numeric', 'email', 'url', 'datetime', 'color', 'toggle', 'image'] %}whitespace-nowrap{% endif %}">
+                                <td data-adm-col="{{ col.name }}" class="px-4 py-3 text-sm text-zinc-800 dark:text-zinc-200 {% if col.kind in ['text', 'numeric', 'email', 'url', 'datetime', 'color', 'toggle', 'image'] %}whitespace-nowrap{% endif %}">
                                     {% include 'admin/resource/cells/' ~ col.kind ~ '.twig' with { col: col, cell: cell } only %}
                                 </td>
                             {% endfor %}
@@ -127,21 +127,21 @@
                                     {% for act in tableRowActions[rowIndex] %}
                                         {% set actIdx = loop.index0 %}
                                         {% if act.kind == 'link' %}
-                                            <a class="mr-3 inline-flex items-center gap-1.5 text-sm text-zinc-300 underline decoration-zinc-600 underline-offset-2 transition-colors hover:text-white" href="{{ route(act.route, act.routeParams) }}">
-                                                {{ icons.r('pencil', 'h-4 w-4 shrink-0 text-zinc-500') }}
+                                            <a class="mr-3 inline-flex items-center gap-1.5 text-sm text-zinc-700 dark:text-zinc-300 underline decoration-zinc-400 dark:decoration-zinc-600 underline-offset-2 transition-colors hover:text-zinc-950 dark:hover:text-white" href="{{ route(act.route, act.routeParams) }}">
+                                                {{ icons.r('pencil', 'h-4 w-4 shrink-0 text-zinc-950 dark:text-zinc-500') }}
                                                 <span>{{ act.label }}</span>
                                             </a>
                                         {% elseif act.kind == 'modal' %}
                                             {% set modalId = 'adm_mtpl_' ~ slug ~ '_' ~ rowIndex ~ '_' ~ actIdx %}
                                             <button type="button"
-                                                    class="mr-3 inline-flex cursor-pointer items-center gap-1.5 border-0 bg-transparent p-0 text-sm underline underline-offset-2 transition-colors {% if act.danger|default(false) %}text-red-400/95 decoration-red-500/50 hover:text-red-300{% else %}text-zinc-300 decoration-zinc-600 hover:text-white{% endif %}"
+                                                    class="mr-3 inline-flex cursor-pointer items-center gap-1.5 border-0 bg-transparent p-0 text-sm underline underline-offset-2 transition-colors {% if act.danger|default(false) %}text-red-400/95 decoration-red-500/50 hover:text-red-300{% else %}text-zinc-700 dark:text-zinc-300 decoration-zinc-400 dark:decoration-zinc-600 hover:text-zinc-950 dark:hover:text-white{% endif %}"
                                                     data-adm-modal-open
                                                     data-adm-modal-template="{{ modalId }}"
                                                     data-adm-modal-title="{{ act.title|e('html_attr') }}">
                                                 {% if act.danger|default(false) %}
                                                     {{ icons.r('trash', 'h-4 w-4 shrink-0 text-red-400') }}
                                                 {% else %}
-                                                    {{ icons.r('document', 'h-4 w-4 shrink-0 text-zinc-500') }}
+                                                    {{ icons.r('document', 'h-4 w-4 shrink-0 text-zinc-950 dark:text-zinc-500') }}
                                                 {% endif %}
                                                 <span>{{ act.label }}</span>
                                             </button>
@@ -180,19 +180,19 @@
     </div>
 
     {% if pagination.hasPages %}
-        <nav class="flex flex-wrap items-center justify-between gap-4 border-t border-zinc-800/80 bg-zinc-950/25 px-4 py-3" aria-label="Pagination">
-            <span class="text-sm text-zinc-500">Page {{ pagination.page }} of {{ pagination.last_page }} · {{ pagination.total }} total</span>
+        <nav class="flex flex-wrap items-center justify-between gap-4 border-t border-zinc-200/90 dark:border-zinc-800/80 bg-zinc-50/90 dark:bg-zinc-950/25 px-4 py-3" aria-label="Pagination">
+            <span class="text-sm text-zinc-950 dark:text-zinc-500">Page {{ pagination.page }} of {{ pagination.last_page }} · {{ pagination.total }} total</span>
             <div class="flex flex-wrap items-center gap-2">
                 {% if not pagination.onFirstPage %}
-                    <a href="{{ pagination.urlForPage(pagination.page - 1) }}" class="inline-flex items-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-900/30 px-3.5 py-2 text-sm font-medium text-zinc-200 ring-1 ring-zinc-800/50 hover:bg-zinc-900/60">
-                        {{ icons.r('chev-left', 'h-4 w-4 shrink-0 text-zinc-500') }}
+                    <a href="{{ pagination.urlForPage(pagination.page - 1) }}" class="inline-flex items-center gap-1.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-200/50 dark:bg-zinc-900/30 px-3.5 py-2 text-sm font-medium text-zinc-800 dark:text-zinc-200 ring-1 ring-zinc-200/50 dark:ring-zinc-800/50 hover:bg-zinc-100/95 dark:bg-zinc-900/60">
+                        {{ icons.r('chev-left', 'h-4 w-4 shrink-0 text-zinc-950 dark:text-zinc-500') }}
                         <span>Previous</span>
                     </a>
                 {% endif %}
                 {% if not pagination.onLastPage %}
-                    <a href="{{ pagination.urlForPage(pagination.page + 1) }}" class="inline-flex items-center gap-1.5 rounded-lg border border-zinc-700 bg-zinc-900/30 px-3.5 py-2 text-sm font-medium text-zinc-200 ring-1 ring-zinc-800/50 hover:bg-zinc-900/60">
+                    <a href="{{ pagination.urlForPage(pagination.page + 1) }}" class="inline-flex items-center gap-1.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-zinc-200/50 dark:bg-zinc-900/30 px-3.5 py-2 text-sm font-medium text-zinc-800 dark:text-zinc-200 ring-1 ring-zinc-200/50 dark:ring-zinc-800/50 hover:bg-zinc-100/95 dark:bg-zinc-900/60">
                         <span>Next</span>
-                        {{ icons.r('chev-right', 'h-4 w-4 shrink-0 text-zinc-500') }}
+                        {{ icons.r('chev-right', 'h-4 w-4 shrink-0 text-zinc-950 dark:text-zinc-500') }}
                     </a>
                 {% endif %}
             </div>
